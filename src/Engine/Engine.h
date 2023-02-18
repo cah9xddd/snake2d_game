@@ -13,7 +13,6 @@ public:
     void HandleEvents();
     void Update();
     void Render();
-    void Clean();
     void Close();
     bool LoadMedia();
     inline bool Running() { return isRunning; }

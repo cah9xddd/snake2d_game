@@ -15,7 +15,6 @@ int main(int argc, char* argv[])
             SDL_LogCritical(1, "Failed to load media!\n");
         }
     }
-
     while (engine->Running())
     {
         engine->HandleEvents();
@@ -25,7 +24,6 @@ int main(int argc, char* argv[])
         engine->Render();
     }
 
-    engine->Clean();
     engine->Close();
     return 0;
 }

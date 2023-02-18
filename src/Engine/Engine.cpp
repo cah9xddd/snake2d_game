@@ -97,10 +97,6 @@ void Engine::Render()
     SDL_RenderPresent(renderer);
 }
 
-void Engine::Clean()
-{
-}
-
 void Engine::Close()
 {
     // Destroy window

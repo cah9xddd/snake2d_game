@@ -7,12 +7,10 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_sdlrenderer.h"
+
 class Engine {
 public:
-    Engine();
-    ~Engine();
-
-    bool Init(const char* title, int x, int y, int w, int h, Uint32 flags);
+    bool Init(const char* title, int x, int y, int w, int h, bool fullscreen);
     void HandleEvents();
     void Update();
     void Render();
@@ -28,9 +26,10 @@ public:
     SDL_Window* window;
     SDL_Renderer* renderer;
     UI_Manager* ui_manager;
+    Uint32 SCREEN_WIDTH;
+    Uint32 SCREEN_HEIGHT;
 
 private:
-
     bool isRunning = false;
 
 };

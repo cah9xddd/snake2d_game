@@ -21,5 +21,5 @@ public:
     void Close();
     void NewFrame();
 private:
-    UI_Color_ style_color = UI_Color_Light;
+    UI_Color_ style_color = UI_Color_Dark;
 };

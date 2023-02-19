@@ -1,9 +1,10 @@
 #include "GUI.h"
 
+
 ImVec4 GUI::CreateSimpleWindow()
 {
-    bool show_demo_window = true;
-    bool show_another_window = false;
+    static bool show_demo_window = true;
+    static bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
     if (show_demo_window)
@@ -13,7 +14,7 @@ ImVec4 GUI::CreateSimpleWindow()
     {
         static float f = 0.0f;
         static int counter = 0;
-
+        ImGui::SetNextWindowPos(ImVec2(0.f, 0.f));
         ImGui::Begin("Hello, world!");  // Create a window called "Hello, world!" and append into it.
 
         ImGui::Text("This is some useful text.");           // Display some text (you can use a format strings too)
@@ -42,4 +43,42 @@ ImVec4 GUI::CreateSimpleWindow()
         ImGui::End();
     }
     return clear_color;
+}
+
+void TextCentered(std::string text, float margin)
+{
+
+    ImVec2 window_size = ImGui::GetWindowSize();
+    auto textWidth = ImGui::CalcTextSize(text.c_str()).x;
+
+    ImGui::SetCursorPosX((window_size.x - textWidth) * 0.5f);
+    ImGui::SetCursorPosY((window_size.y - textWidth) * 0.5f + margin);
+
+    ImGui::Text(text.c_str());
+}
+
+void GUI::CreateScoreWindow()
+{
+    static Uint32 score = 0;
+    static Uint32 high_score = 0;
+    ImVec2 window_size = ImGui::GetMainViewport()->WorkSize;
+
+    ImGui::SetNextWindowSize(ImVec2(window_size.x / 10, window_size.y));
+    ImGui::SetNextWindowPos(ImVec2(window_size.x - window_size.x / 10, 0.f));
+    ImGui::Begin("", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration);
+
+    // ImGui::ShowFontSelector("SELECT");
+    // auto all_fonts = ImGui::GetIO().Fonts->Fonts;
+    // auto font = all_fonts.back();
+    // ImGui::PushFont(font);
+    TextCentered("SCORE", 0.f);
+
+    TextCentered("SCORE", ImGui::GetFontSize());
+    //ImGui::PopFont();
+
+    // ImGui::Text("Score: %d", score++);
+    // ImGui::Text("High Score: %d", high_score++);
+
+    // End the ImGui frame
+    ImGui::End();
 }

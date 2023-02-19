@@ -9,6 +9,12 @@ UI_Manager::UI_Manager()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     SetUIColor(style_color);
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+    ImFontConfig config;
+    config.SizePixels = 32;
+    auto asd = io.Fonts->AddFontFromFileTTF("assets/fonts/OpenSans-Regular.ttf", 32.0f, &config, io.Fonts->GetGlyphRangesDefault());
+    IM_ASSERT(asd != nullptr);
 }
 
 UI_Manager::~UI_Manager()

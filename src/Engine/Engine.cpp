@@ -1,14 +1,6 @@
 #include "Engine.h"
 #include "GUI/GUI.h"
 #include <iostream>
-Engine::Engine()
-{
-    std::cout << "HELLO FROM ENGINE" << std::endl;
-}
-
-Engine::~Engine() {};
-
-
 /// \param title the title of the window, in UTF-8 encoding
 /// \param x the x position of the window, `SDL_WINDOWPOS_CENTERED`, or
 ///          `SDL_WINDOWPOS_UNDEFINED`
@@ -18,7 +10,7 @@ Engine::~Engine() {};
 /// \param h the height of the window, in screen coordinates
 /// \param flags 0, or one or more SDL_WindowFlags OR'd together
 /// \return isRunning = true if all inits are ok , else false
-bool Engine::Init(const char* title, int x, int y, int w, int h, Uint32 flags)
+bool Engine::Init(const char* title, int x, int y, int w, int h, bool fullscreen)
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
     {
@@ -31,7 +23,19 @@ bool Engine::Init(const char* title, int x, int y, int w, int h, Uint32 flags)
             SDL_Log("Warning: Linear texture filtering not enabled!\n");
         }
 
-        window = SDL_CreateWindow(title, x, y, w, h, flags);
+        if (fullscreen)
+        {
+            SDL_DisplayMode current;
+            SDL_GetCurrentDisplayMode(0, &current);
+            SCREEN_WIDTH = current.w;
+            SCREEN_HEIGHT = current.h;
+        }
+        else
+        {
+            SCREEN_WIDTH = w;
+            SCREEN_HEIGHT = h;
+        }
+        window = SDL_CreateWindow(title, x, y, SCREEN_WIDTH, SCREEN_HEIGHT, fullscreen);
         if (window == nullptr)
         {
             SDL_LogCritical(1, "Failed to initialize window : %s\n", SDL_GetError());
@@ -69,14 +73,14 @@ bool Engine::Init(const char* title, int x, int y, int w, int h, Uint32 flags)
 
     if (ui_manager)
     {
-        ImGui_ImplSDL2_InitForSDLRenderer(window,renderer);
+        ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
         ImGui_ImplSDLRenderer_Init(renderer);
     }
     else
     {
         SDL_LogCritical(1, "Failed to initialize UI: ");
     }
-    
+
     return isRunning = true;
 }
 
@@ -115,14 +119,16 @@ void Engine::Render()
 
     ui_manager->NewFrame();
 
-    ImVec4 clear_color = GUI::CreateSimpleWindow();
+     ImVec4 clear_color = GUI::CreateSimpleWindow();
+
+    GUI::CreateScoreWindow();
 
     ImGui::Render();
 
     SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
 
-    SDL_SetRenderDrawColor(renderer, (Uint8)(clear_color.x * 255), (Uint8)(clear_color.y * 255), (Uint8)(clear_color.z * 255), (Uint8)(clear_color.w * 255));
-    
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
     SDL_RenderClear(renderer);
 
     ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());

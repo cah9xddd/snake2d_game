@@ -16,11 +16,13 @@ find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 
-include_directories(${PROJECT_NAME}  ${SDL2_INCLUDE_DIRS} )
+include_directories(${PROJECT_NAME} ${SDL2_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src )
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE IMGUI "include/imgui/*.cpp")
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+
+add_executable(${PROJECT_NAME} ${SOURCES} ${IMGUI})
 
 if(WIN32)
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")

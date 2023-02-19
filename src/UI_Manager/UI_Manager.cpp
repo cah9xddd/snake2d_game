@@ -71,3 +71,17 @@ void UI_Manager::NewFrame()
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 }
+
+void UI_Manager::PrepareUI()
+{
+    NewFrame();
+
+    GUI::CreateScoreWindow();
+    GUI::CreateSimpleWindow();
+    ImGui::Render();
+}
+
+void UI_Manager::RenderUI()
+{
+    ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
+}

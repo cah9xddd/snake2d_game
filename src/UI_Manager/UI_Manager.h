@@ -3,7 +3,7 @@
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_sdlrenderer.h"
 #include "SDL2/SDL.h"
-#include "string"
+#include <string>
 #include "GUI/GUI.h"
 class UI_Manager 
 {
@@ -20,6 +20,8 @@ public:
     void ChangeUIColor();
     void Close();
     void NewFrame();
+    void PrepareUI();
+    void RenderUI();
 private:
     UI_Color_ style_color = UI_Color_Dark;
 };

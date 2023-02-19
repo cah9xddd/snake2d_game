@@ -1,6 +1,5 @@
 #include "GUI.h"
 
-
 ImVec4 GUI::CreateSimpleWindow()
 {
     static bool show_demo_window = true;

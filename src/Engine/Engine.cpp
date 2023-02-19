@@ -114,24 +114,18 @@ void Engine::Update()
 
 void Engine::Render()
 {
-    ImGuiIO& io = ImGui::GetIO();
-    (void)io;
 
-    ui_manager->NewFrame();
 
-     ImVec4 clear_color = GUI::CreateSimpleWindow();
-
-    GUI::CreateScoreWindow();
-
-    ImGui::Render();
-
-    SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+    ui_manager->PrepareUI();
+    // ImGuiIO& io = ImGui::GetIO();
+    // (void)io;
+    // SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
     SDL_RenderClear(renderer);
 
-    ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
+    ui_manager->RenderUI();
 
     SDL_RenderPresent(renderer);
 }

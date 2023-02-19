@@ -21,6 +21,9 @@ include_directories(${PROJECT_NAME} ${SDL2_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/i
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE IMGUI "include/imgui/*.cpp")
 
+if (CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -static-libgcc -static-libstdc++")
+endif()
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${IMGUI})
 
@@ -32,14 +35,21 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} SDL2_image SDL2_ttf SDL2_mixer)
 
-#file(GLOB MY_DLLS ${PROJECT_SOURCE_DIR}/bin/*.dll)
 
-#foreach(Current_DLL IN LISTS MY_DLLS)
-#    add_custom_command(
-#               TARGET ${PROJECT_NAME} POST_BUILD
-#               COMMAND ${CMAKE_COMMAND} -E copy ${Current_DLL} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-#               COMMENT "Copying header: ${Current_DLL}")
-#endforeach()
+if (CMAKE_COMPILER_IS_GNUCXX)
+    add_custom_command(
+     TARGET ${PROJECT_NAME} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy
+                 ${CMAKE_CURRENT_SOURCE_DIR}/bin/g++/libwinpthread-1.dll
+                 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+endif()
+file(GLOB MY_DLLS ${PROJECT_SOURCE_DIR}/bin/*.dll)
+foreach(Current_DLL IN LISTS MY_DLLS)
+    add_custom_command(
+               TARGET ${PROJECT_NAME} POST_BUILD
+               COMMAND ${CMAKE_COMMAND} -E copy ${Current_DLL} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+               COMMENT "Copying header: ${Current_DLL}")
+endforeach()
 
 add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD

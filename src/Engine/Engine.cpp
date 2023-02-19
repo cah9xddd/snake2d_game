@@ -1,6 +1,6 @@
 #include "Engine.h"
+#include "GUI/GUI.h"
 #include <iostream>
-
 Engine::Engine()
 {
     std::cout << "HELLO FROM ENGINE" << std::endl;
@@ -65,21 +65,41 @@ bool Engine::Init(const char* title, int x, int y, int w, int h, Uint32 flags)
         return false;
     }
 
+    ui_manager = new UI_Manager;
+
+    if (ui_manager)
+    {
+        ImGui_ImplSDL2_InitForSDLRenderer(window,renderer);
+        ImGui_ImplSDLRenderer_Init(renderer);
+    }
+    else
+    {
+        SDL_LogCritical(1, "Failed to initialize UI: ");
+    }
+    
     return isRunning = true;
 }
 
 void Engine::HandleEvents()
 {
     SDL_Event event;
-    SDL_PollEvent(&event);
-    switch (event.type)
+    while (SDL_PollEvent(&event))
     {
-    case SDL_QUIT:
-        isRunning = false;
-        std::cout << "CLOSING WINDOW\n";
-        break;
-    default:
-        break;
+
+        ImGui_ImplSDL2_ProcessEvent(&event);
+        if (event.type == SDL_QUIT)
+            isRunning = false;
+        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
+            isRunning = false;
+        const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
+        if (currentKeyStates[SDL_SCANCODE_ESCAPE])
+        {
+            isRunning = false;
+        }
+        else if (currentKeyStates[SDL_SCANCODE_SPACE])
+        {
+            ui_manager->ChangeUIColor();
+        }
     }
 }
 
@@ -90,15 +110,32 @@ void Engine::Update()
 
 void Engine::Render()
 {
-    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+
+    ui_manager->NewFrame();
+
+    ImVec4 clear_color = GUI::CreateSimpleWindow();
+
+    ImGui::Render();
+
+    SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+
+    SDL_SetRenderDrawColor(renderer, (Uint8)(clear_color.x * 255), (Uint8)(clear_color.y * 255), (Uint8)(clear_color.z * 255), (Uint8)(clear_color.w * 255));
+    
     SDL_RenderClear(renderer);
 
+    ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
 
     SDL_RenderPresent(renderer);
 }
 
 void Engine::Close()
 {
+
+    ui_manager->Close();
+    ui_manager = nullptr;
+
     // Destroy window
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -109,7 +146,6 @@ void Engine::Close()
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();
-    std::cout << "GAME CLEARED" << std::endl;
 }
 
 bool Engine::LoadMedia()

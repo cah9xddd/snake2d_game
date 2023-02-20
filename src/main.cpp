@@ -1,4 +1,4 @@
-#include "Engine/Engine.h"
+#include "Framework/Framework.h"
 #include "SDL2/SDL.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl2.h"
@@ -8,31 +8,32 @@
 #if !SDL_VERSION_ATLEAST(2, 0, 17)
 #error This backend requires SDL 2.0.17+ because of SDL_RenderGeometry() function
 #endif
-Engine* engine = nullptr;
+
+Framework* framework = nullptr;
 int main(int argc, char* argv[])
 {
-    engine = new Engine();
-     if (!engine->Init("GAME", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, true))
+    framework = new Framework();
+    if (!framework->Init("GAME", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, false))
     {
         SDL_LogCritical(1, "Failed initialize\n");
     }
     else
     {
-        if (!engine->LoadMedia())
+        if (!framework->LoadMedia())
         {
             SDL_LogCritical(1, "Failed to load media!\n");
         }
     }
 
-    while (engine->Running())
+    while (framework->Running())
     {
-        engine->HandleEvents();
+        framework->HandleEvents();
 
-        engine->Update();
+        framework->Update();
 
-        engine->Render();
+        framework->Render();
     }
 
-    engine->Close();
+    framework->Close();
     return 0;
 }

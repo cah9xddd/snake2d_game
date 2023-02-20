@@ -35,7 +35,6 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} SDL2_image SDL2_ttf SDL2_mixer)
 
-
 if (CMAKE_COMPILER_IS_GNUCXX)
     add_custom_command(
      TARGET ${PROJECT_NAME} POST_BUILD
@@ -43,6 +42,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
                  ${CMAKE_CURRENT_SOURCE_DIR}/bin/g++/libwinpthread-1.dll
                  ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
+
 file(GLOB MY_DLLS ${PROJECT_SOURCE_DIR}/bin/*.dll)
 foreach(Current_DLL IN LISTS MY_DLLS)
     add_custom_command(

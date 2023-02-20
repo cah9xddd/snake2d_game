@@ -1,10 +1,24 @@
 #pragma once
-
-class GM
-{
+#include "SDL2/SDL.h"
+#include "Vector2/Vector2.h"
+#include <iostream>
+class GM {
 public:
-    GM();
-    ~GM();
+    static GM* GetInstance() { return (GameManager != nullptr) ? GameManager : GameManager = new GM; };
+    ~GM() {};
+    inline Vector2<float> GetSquareSize() { return square_size; };
+    void SetSquareSize(float x, float y);
+    void PrintArray();
+    inline Uint32 CheckSquare(Uint32 x, Uint32 y) { return arr[x][y]; };
+    inline void SetSquare(Uint32 x, Uint32 y, Uint32 value) { arr[x][y] = value; };
 
 private:
+    static GM* GameManager;
+    static const Uint32 SIZE_X = 28;
+    static const Uint32 SIZE_Y = 18;
+    Uint32 arr[SIZE_X][SIZE_Y] = {0};
+    Vector2<float> square_size;
+    GM() {};
+    GM(GM& other) = delete;
+    void operator=(const GM& other) = delete;
 };

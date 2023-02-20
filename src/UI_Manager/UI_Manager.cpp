@@ -9,36 +9,33 @@ UI_Manager::UI_Manager()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     SetUIColor(style_color);
+    ImGui::GetStyle().WindowBorderSize = 0.f;
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
     ImFontConfig config;
     config.SizePixels = 32;
-    auto asd = io.Fonts->AddFontFromFileTTF("assets/fonts/OpenSans-Regular.ttf", 32.0f, &config, io.Fonts->GetGlyphRangesDefault());
+    auto asd = io.Fonts->AddFontFromFileTTF("assets/fonts/OpenSans-Regular.ttf", 32.f, &config, io.Fonts->GetGlyphRangesDefault());
     IM_ASSERT(asd != nullptr);
-}
-
-UI_Manager::~UI_Manager()
-{
 }
 
 void UI_Manager::SetUIColor(UI_Color_ color)
 {
     switch (color)
     {
-    case UI_Color_Classic:
-        ImGui::StyleColorsClassic();
-        style_color = UI_Color_Classic;
-        break;
-    case UI_Color_Dark:
-        ImGui::StyleColorsDark();
-        style_color = UI_Color_Dark;
-        break;
-    case UI_Color_Light:
-        ImGui::StyleColorsLight();
-        style_color = UI_Color_Light;
-        break;
-    default:
-        break;
+        case UI_Color_Classic:
+            ImGui::StyleColorsClassic();
+            style_color = UI_Color_Classic;
+            break;
+        case UI_Color_Dark:
+            ImGui::StyleColorsDark();
+            style_color = UI_Color_Dark;
+            break;
+        case UI_Color_Light:
+            ImGui::StyleColorsLight();
+            style_color = UI_Color_Light;
+            break;
+        default:
+            break;
     }
 }
 
@@ -77,7 +74,9 @@ void UI_Manager::PrepareUI()
     NewFrame();
 
     GUI::CreateScoreWindow();
-    GUI::CreateSimpleWindow();
+
+   // GUI::CreateSimpleWindow();
+
     ImGui::Render();
 }
 

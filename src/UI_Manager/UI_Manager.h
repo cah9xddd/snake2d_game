@@ -14,14 +14,14 @@ public:
         UI_Color_Light = 1 << 1,
     };
     UI_Manager();
-    ~UI_Manager();
 
     void SetUIColor(UI_Color_ color);
     void ChangeUIColor();
     void Close();
-    void NewFrame();
+    
     void PrepareUI();
     void RenderUI();
 private:
     UI_Color_ style_color = UI_Color_Dark;
+    void NewFrame();
 };

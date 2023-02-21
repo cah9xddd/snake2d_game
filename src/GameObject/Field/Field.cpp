@@ -2,8 +2,9 @@
 
 Field::Field(SDL_Window* window) : GameObject(window)
 {
-    field.h = 18 * GM::GetInstance()->GetSquareSize().y;
-    field.w = 28 * GM::GetInstance()->GetSquareSize().x;
+    field.w = 28.f * GM::GetInstance()->GetSquareSize().x;
+    field.h = 18.f * GM::GetInstance()->GetSquareSize().y;
+    
     field.x = 0;
     field.y = 0;
 }
@@ -35,8 +36,10 @@ void Field::Render(SDL_Renderer* renderer)
 void Field::UpdateWindowSize(SDL_Window* window)
 {
     SDL_GetWindowSize(window, &window_size.x, &window_size.y);
-    field.h = 18 * GM::GetInstance()->GetSquareSize().y;
-    field.w = 28 * GM::GetInstance()->GetSquareSize().x;
+
+    field.w = 28.f * GM::GetInstance()->GetSquareSize().x;
+    field.h = 18.f * GM::GetInstance()->GetSquareSize().y;
+    
     field.x = 0;
     field.y = 0;
 }

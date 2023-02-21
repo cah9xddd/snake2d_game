@@ -13,13 +13,13 @@ Apple::~Apple()
 
 void Apple::RandomApplePos()
 {
-    int pos_x = rand() % 28;
-    int pos_y = rand() % 18;
+    int pos_x = rand() % 15;
+    int pos_y = rand() % 15;
 
     while (GM::GetInstance()->CheckSquare(pos_x, pos_y) != 0)
     {
-        int pos_x = rand() % 28;
-        int pos_y = rand() % 18;
+        int pos_x = rand() % 15;
+        int pos_y = rand() % 15;
     }
 
     GM::GetInstance()->SetSquare(pos_x, pos_y, 2);
@@ -29,6 +29,7 @@ void Apple::RandomApplePos()
 
     coordinates.x = pos_x;
     coordinates.y = pos_y;
+
 }
 
 void Apple::ClearApplePos()

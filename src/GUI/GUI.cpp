@@ -62,8 +62,8 @@ void GUI::CreateScoreWindow()
     
     ImVec2 window_size = ImGui::GetMainViewport()->WorkSize;
 
-    ImGui::SetNextWindowSize(ImVec2(window_size.x / 8, window_size.y));
-    ImGui::SetNextWindowPos(ImVec2(window_size.x - window_size.x / 8, 0.f));
+    ImGui::SetNextWindowSize(ImVec2(window_size.x / 8.f, window_size.y));
+    ImGui::SetNextWindowPos(ImVec2(window_size.x - window_size.x / 8.f, 0.f));
     ImGui::Begin("Score", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration);
 
     TextCentered("SCORE", 0.f);

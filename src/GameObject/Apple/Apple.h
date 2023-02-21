@@ -12,5 +12,5 @@ public:
     void UpdateWindowSize(SDL_Window* window) override;
 
 protected:
-    Vector2<Uint32> coordinates;
+    Vector2<int> coordinates;
 };

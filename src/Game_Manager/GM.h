@@ -11,15 +11,16 @@ public:
     inline int CheckSquare(int x, int y) { return arr[x][y]; };
     inline void SetSquare(int x, int y, int value) { arr[x][y] = value; };
     void RefreshSquareSize(SDL_Window* window);
-
+    void Update();
 private:
-    static GM* GameManager;
 
     Vector2<float> square_size;
 
     static const int SIZE_X = 28;
     static const int SIZE_Y = 18;
     int arr[SIZE_X][SIZE_Y] = {0};
+
+    static GM* GameManager;
 
     GM() {};
     GM(GM& other) = delete;

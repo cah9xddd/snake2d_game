@@ -3,6 +3,7 @@
 #include "Game_Manager/GM.h"
 #include "SDL2/SDL_image.h"
 #include <iostream>
+#include <list>
 #include <string>
 class Snake : public GameObject {
 public:
@@ -15,9 +16,12 @@ public:
     void UpdateWindowSize(SDL_Window* window) override;
 
 protected:
-    Vector2<int> head_pos;
+    std::list<Vector2<int>> snake_body;
 
-    int speed = 150;
+    float passed_time = 0;
+    float time_between_movements = 0.4f;
+
+    int size = 1;
+
     Vector2<float> direction = {1.f, 0.f};
-    Vector2<float> new_direction = {1.f, 0.f};
 };

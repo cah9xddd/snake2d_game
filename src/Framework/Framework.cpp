@@ -1,6 +1,7 @@
 #include "Framework.h"
 #include "GUI/GUI.h"
 #include <iostream>
+
 /// \param title the title of the window, in UTF-8 encoding
 /// \param x the x position of the window, `SDL_WINDOWPOS_CENTERED`, or
 ///          `SDL_WINDOWPOS_UNDEFINED`
@@ -110,7 +111,7 @@ void Framework::HandleEvents()
             {
                 snake->UpdateWindowSize(window);
             }   
-                     SDL_RenderPresent(renderer);
+            SDL_RenderPresent(renderer);
         }
 
         const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
@@ -171,7 +172,7 @@ void Framework::HandleEvents()
 void Framework::Update()
 {
     double dt = SimpleTimer::GetInstance()->GetDeltaTime();
-     if (snake)
+    if (snake)
     {
         snake->Update(dt);
     }

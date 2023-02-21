@@ -7,6 +7,7 @@ public:
     virtual ~GameObject();
     virtual void Render(SDL_Renderer* renderer);
     virtual void Update();
+    virtual void UpdateWindowSize(SDL_Window* window);
     virtual void Init();
 
 protected:

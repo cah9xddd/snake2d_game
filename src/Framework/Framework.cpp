@@ -14,13 +14,13 @@ bool Framework::Init(const char* title, int x, int y, int w, int h, bool fullscr
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
     {
-        SDL_LogCritical(1, "SDL initialized successfully.\n");
+        std::cout << "SDL initialized successfully.\n";
 
         srand(SDL_GetTicks());
 
         if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
         {
-            SDL_Log("Warning: Linear texture filtering not enabled!\n");
+            std::cout << "Warning: Linear texture filtering not enabled!\n";
         }
 
         if (fullscreen)
@@ -78,7 +78,7 @@ bool Framework::Init(const char* title, int x, int y, int w, int h, bool fullscr
     }
     else
     {
-        SDL_LogCritical(1, "Failed to initialize UI: ");
+       std::cout << "Failed to initialize UI\n";
     }
 
     return isRunning = true;
@@ -93,35 +93,30 @@ void Framework::HandleEvents()
         ImGui_ImplSDL2_ProcessEvent(&event);
         if (event.type == SDL_QUIT)
             isRunning = false;
-        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
+        else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
             isRunning = false;
-        if (event.type == SDL_WINDOWEVENT)
+        else if (event.type == SDL_WINDOWEVENT)
         {
-            switch (event.window.event)
-            {
-                case SDL_WINDOWEVENT_SIZE_CHANGED: {
-                    SCREEN_WIDTH = event.window.data1;
-                    SCREEN_HEIGHT = event.window.data2;
-                    if (field != nullptr)
-                    {
-                        delete field;
-                        field = nullptr;
-                        field = new Field(window);
-                    }
-                    if(apple !=nullptr)
-                    {
-                        delete apple;
-                        apple = nullptr;
-                        apple = new Apple(window);
-                    }
-                    SDL_RenderPresent(renderer);
-                    break;
-                }
-                case SDL_WINDOWEVENT_EXPOSED: {
-                    SDL_RenderPresent(renderer);
-                    break;
-                }
-            }
+            GM::GetInstance()->RefreshSquareSize(window);
+            field->UpdateWindowSize(window);
+            apple->UpdateWindowSize(window);
+            SDL_RenderPresent(renderer);
+            // switch (event.window.event)
+            // {
+            //     case SDL_WINDOWEVENT_SIZE_CHANGED: {
+            //         SCREEN_WIDTH = event.window.data1;
+            //         SCREEN_HEIGHT = event.window.data2;
+                   
+            //         break;
+            //     }
+            //     case SDL_WINDOWEVENT_EXPOSED: {
+            //         GM::GetInstance()->RefreshSquareSize(window);
+            //         field->UpdateWindowSize(window);
+
+            //         SDL_RenderPresent(renderer);
+            //         break;
+            //     }
+            // }
         }
 
         const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
@@ -202,7 +197,10 @@ void Framework::Render()
         {
             apple->Render(renderer);
         }
-
+        if (snake)
+        {
+            snake->Render(renderer);
+        }
         ui_manager->RenderUI();
         SDL_RenderPresent(renderer);
     }
@@ -214,6 +212,9 @@ void Framework::Close()
     field = nullptr;
     delete apple;
     apple = nullptr;
+    delete snake;
+    snake = nullptr;
+
     ui_manager->Close();
     ui_manager = nullptr;
 
@@ -232,12 +233,12 @@ void Framework::Close()
 bool Framework::LoadMedia()
 {
     GM::GetInstance();
+    GM::GetInstance()->RefreshSquareSize(window);
     field = new Field(window);
-
-    GM::GetInstance()->SetSquareSize(field->GetSquareSize().x, field->GetSquareSize().y);
 
     apple = new Apple(window);
     
+    snake = new Snake(window);
 
     return true;
 }

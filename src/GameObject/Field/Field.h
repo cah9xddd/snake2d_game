@@ -2,15 +2,14 @@
 #include "../GameObject.h"
 #include "SDL2/SDL.h"
 #include "Vector2/Vector2.h"
+#include "Game_Manager/GM.h"
 class Field : public GameObject
 {
 public:
     Field(SDL_Window* window);
     ~Field() {};
     void Render(SDL_Renderer* renderer) override;
-    inline Vector2<float> GetSquareSize() { return square_size;};
+    void UpdateWindowSize(SDL_Window* window) override;
 private:
-    Vector2<float> square_size;
     SDL_Rect field;
-    
 };

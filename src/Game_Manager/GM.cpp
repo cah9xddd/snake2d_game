@@ -1,12 +1,6 @@
 #include "GM.h"
 GM* GM::GameManager = nullptr;
 
-void GM::SetSquareSize(float x, float y)
-{
-    square_size.x = x;
-    square_size.y = y;
-}
-
 void GM::PrintArray()
 {
     for (int x = 0; x < SIZE_X; ++x)
@@ -19,4 +13,14 @@ void GM::PrintArray()
             }
         }
     }
+}
+
+void GM::RefreshSquareSize(SDL_Window* window)
+{
+    int size_x = 0;
+    int size_y = 0;
+    SDL_GetWindowSize(window, &size_x, &size_y);
+
+    square_size.x = (size_x - (size_x / 16) * 2) / 28.f;
+    square_size.y = size_y / 18.f;
 }

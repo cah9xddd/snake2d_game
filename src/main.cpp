@@ -15,13 +15,13 @@ int main(int argc, char* argv[])
     framework = new Framework();
     if (!framework->Init("GAME", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, false))
     {
-        SDL_LogCritical(1, "Failed initialize\n");
+        std::cout << "Failed initialize framework\n";
     }
-    else
+    else 
     {
         if (!framework->LoadMedia())
         {
-            SDL_LogCritical(1, "Failed to load media!\n");
+            std::cout << "Failed to load media!\n";
         }
     }
 

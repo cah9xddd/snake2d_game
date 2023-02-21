@@ -5,9 +5,7 @@ Apple::Apple(SDL_Window* window) : GameObject(window)
     auto renderer = SDL_GetRenderer(window);
     texture = IMG_LoadTexture(renderer, "assets/sprites/apple.png");
     RandomApplePos();
-    std::cout << position.x << " " << position.y << std::endl;
 }
-
 Apple::~Apple()
 {
     ClearApplePos();
@@ -22,24 +20,31 @@ void Apple::RandomApplePos()
         Uint32 pos_x = rand() % 28;
         Uint32 pos_y = rand() % 18;
     }
-    GM::GetInstance()->SetSquare(pos_x,pos_y,2);
-    position.x = 5 + pos_x * GM::GetInstance()->GetSquareSize().x;
-    position.y = 5 + pos_y * GM::GetInstance()->GetSquareSize().y;
+    GM::GetInstance()->SetSquare(pos_x, pos_y, 2);
+    position.x = pos_x * GM::GetInstance()->GetSquareSize().x;
+    position.y = pos_y * GM::GetInstance()->GetSquareSize().y;
     coordinates.x = pos_x;
     coordinates.y = pos_y;
 }
 
 void Apple::ClearApplePos()
 {
-    GM::GetInstance()->SetSquare(coordinates.x,coordinates.y, 0);
+    GM::GetInstance()->SetSquare(coordinates.x, coordinates.y, 0);
 }
 
 void Apple::Render(SDL_Renderer* renderer)
 {
     SDL_Rect texture_rect;
-    texture_rect.x = position.x;
-    texture_rect.y = position.y;
-    texture_rect.w = window_size.x / 42.f;
-    texture_rect.h = window_size.y / 24.f;
+    Vector2<float> square_size = GM::GetInstance()->GetSquareSize();
+    texture_rect.x = position.x + square_size.x * 0.1f;
+    texture_rect.y = position.y + square_size.y * 0.1f;
+    texture_rect.w = square_size.x * 0.85f;
+    texture_rect.h = square_size.y * 0.85f;
     SDL_RenderCopy(renderer, texture, nullptr, &texture_rect);
+}
+void Apple::UpdateWindowSize(SDL_Window* window)
+{
+    SDL_GetWindowSize(window, &window_size.x, &window_size.y);
+    position.x = coordinates.x * GM::GetInstance()->GetSquareSize().x;
+    position.y = coordinates.y * GM::GetInstance()->GetSquareSize().y;
 }

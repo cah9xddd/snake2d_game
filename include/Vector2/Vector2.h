@@ -26,6 +26,11 @@ Vector2<T> operator-(const Vector2<T>& V1, const Vector2<T>& V2)
 {
     return Vector2<T>(V1.x - V2.x, V1.y - V2.y);
 }
+template <typename T>
+Vector2<T> operator*(const Vector2<T>& V1, const Vector2<T>& V2)
+{
+    return Vector2<T>(V1.x * V2.x, V1.y * V2.y);
+}
 template <typename T, typename B>
 Vector2<T> operator*(const Vector2<T>& V1, B a)
 {

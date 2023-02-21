@@ -4,16 +4,20 @@ GM* GM::GameManager = nullptr;
 
 void GM::PrintArray()
 {
-    for (int x = 0; x < SIZE_X; ++x)
+    std::cout << std::endl;
+    for (int y = 0; y < SIZE_Y; ++y)
     {
-        for (int y = 0; y < SIZE_Y; ++y)
+        for (int x = 0; x < SIZE_X; ++x)
         {
-            if (arr[x][y] == 2)
-            {
-                std::cout << "APPLE : " << x + 1 << " x " << y + 1 << std::endl;
-            }
+            // if (arr[x][y] == 2)
+            // {
+            //     std::cout << "APPLE : " << x + 1 << " x " << y + 1 << std::endl;
+            // }
+            std::cout << arr[x][y] << " ";
         }
+        std::cout << std::endl;
     }
+    std::cout << std::endl;
 }
 
 void GM::RefreshSquareSize(SDL_Window* window)

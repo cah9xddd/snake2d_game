@@ -4,20 +4,72 @@ Snake::Snake(SDL_Window* window) : GameObject(window)
 {
     auto renderer = SDL_GetRenderer(window);
     texture = IMG_LoadTexture(renderer, "assets/sprites/square1.png");
-    speed = window_size.x / 8;
+    speed = window_size.x / 30;
     GM::GetInstance()->SetSquare(0, 0, 1);
     head_pos = {0, 0};
 }
 
 void Snake::Update(double delta_time)
 {
-    //std::cout << delta_time << std::endl;
-    std::cout << position << std::endl;
+    // std::cout << delta_time << std::endl;
+    // std::cout << position << std::endl;
     Vector2<float> velocity = direction * speed;
     Vector2<float> square_size = GM::GetInstance()->GetSquareSize();
 
-    position = position + (velocity * delta_time);
+    
 
+    Vector2<int> next_pos;
+    next_pos.x = (head_pos.x + direction.x) * square_size.x;
+    next_pos.y = (head_pos.y + direction.y) * square_size.y;
+
+    if (direction.x != 0.f)
+    {
+        if (direction.x > 0 && position.x >= next_pos.x - square_size.x / 2)
+        {
+            std::cout << "WAS"<< std::endl;
+            GM::GetInstance()->PrintArray();
+            GM::GetInstance()->SetSquare(head_pos.x, head_pos.y, 0);
+            head_pos = head_pos + direction;
+            GM::GetInstance()->SetSquare(head_pos.x, head_pos.y, 1);
+            GM::GetInstance()->PrintArray();
+        }
+        else if (direction.x < 0 && position.x <= next_pos.x + square_size.x / 2)
+        {
+            std::cout << "WAS" << std::endl;
+            GM::GetInstance()->PrintArray();
+            GM::GetInstance()->SetSquare(head_pos.x, head_pos.y, 0);
+            head_pos = head_pos + direction;
+            GM::GetInstance()->SetSquare(head_pos.x, head_pos.y, 1);
+            GM::GetInstance()->PrintArray();
+        }
+    }
+    else if (direction.y != 0.f)
+    {
+        if (direction.y > 0 && position.y >= next_pos.y - square_size.y / 2)
+        {
+            std::cout << "WAS" << std::endl;
+
+            GM::GetInstance()->PrintArray();
+            GM::GetInstance()->SetSquare(head_pos.x, head_pos.y, 0);
+            head_pos = head_pos + direction;
+            GM::GetInstance()->SetSquare(head_pos.x, head_pos.y, 1);
+            GM::GetInstance()->PrintArray();
+        }
+        else if (direction.y < 0 && position.y <= next_pos.y + square_size.y / 2)
+        {
+            std::cout << "WAS" << std::endl;
+
+            GM::GetInstance()->PrintArray();
+
+            GM::GetInstance()->SetSquare(head_pos.x, head_pos.y, 0);
+            head_pos = head_pos + direction;
+            GM::GetInstance()->SetSquare(head_pos.x, head_pos.y, 1);
+            GM::GetInstance()->PrintArray();
+        }
+    }
+
+
+    position = position + (velocity * delta_time);
     if (new_direction.y != 0.f)
     {
         int i = ((int)position.x % (int)square_size.x);
@@ -36,6 +88,7 @@ void Snake::Update(double delta_time)
             return;
         }
     }
+    
 }
 
 
@@ -81,7 +134,7 @@ void Snake::UpdateWindowSize(SDL_Window* window)
 {
     SDL_GetWindowSize(window, &window_size.x, &window_size.y);
 
-    speed = window_size.x / 8;
+    speed = window_size.x / 30;
 }
 
 void Snake::Render(SDL_Renderer* renderer)

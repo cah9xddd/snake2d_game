@@ -6,9 +6,10 @@ public:
     GameObject(SDL_Window* window);
     virtual ~GameObject();
     virtual void Render(SDL_Renderer* renderer);
-    virtual void Update();
+    virtual void Update(double delta_time);
     virtual void UpdateWindowSize(SDL_Window* window);
     virtual void Init();
+    virtual void HandleInput(SDL_Event& event);
 
 protected:
     Vector2<float> position;

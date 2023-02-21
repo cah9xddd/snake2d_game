@@ -15,7 +15,7 @@ void GameObject::Render(SDL_Renderer* renderer)
 {
 }
 
-void GameObject::Update()
+void GameObject::Update(double delta_time)
 {
     
 }
@@ -26,5 +26,9 @@ void GameObject::UpdateWindowSize(SDL_Window* window)
 }
 
 void GameObject::Init()
+{
+}
+
+void GameObject::HandleInput(SDL_Event& event)
 {
 }

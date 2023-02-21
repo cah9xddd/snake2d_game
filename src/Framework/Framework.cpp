@@ -89,34 +89,28 @@ void Framework::HandleEvents()
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
-
         ImGui_ImplSDL2_ProcessEvent(&event);
         if (event.type == SDL_QUIT)
             isRunning = false;
-        else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
+        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
             isRunning = false;
-        else if (event.type == SDL_WINDOWEVENT)
+
+        if (event.type == SDL_WINDOWEVENT)
         {
             GM::GetInstance()->RefreshSquareSize(window);
-            field->UpdateWindowSize(window);
-            apple->UpdateWindowSize(window);
-            SDL_RenderPresent(renderer);
-            // switch (event.window.event)
-            // {
-            //     case SDL_WINDOWEVENT_SIZE_CHANGED: {
-            //         SCREEN_WIDTH = event.window.data1;
-            //         SCREEN_HEIGHT = event.window.data2;
-                   
-            //         break;
-            //     }
-            //     case SDL_WINDOWEVENT_EXPOSED: {
-            //         GM::GetInstance()->RefreshSquareSize(window);
-            //         field->UpdateWindowSize(window);
-
-            //         SDL_RenderPresent(renderer);
-            //         break;
-            //     }
-            // }
+            if (field)
+            {
+                field->UpdateWindowSize(window);
+            }
+            if( apple)
+            {
+                apple->UpdateWindowSize(window);
+            }
+            if(snake)
+            {
+                snake->UpdateWindowSize(window);
+            }   
+                     SDL_RenderPresent(renderer);
         }
 
         const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
@@ -132,25 +126,21 @@ void Framework::HandleEvents()
                 {
                     if (field != nullptr)
                     {
-                        SDL_Log("DELETED FIELD");
                         delete field;
                         field = nullptr;
                     }
                     else
                     {
-                        SDL_Log("CREATED FIELD");
                         field = new Field(window);
                     }
 
                     if (apple != nullptr)
                     {
-                        SDL_Log("DELETED Apple");
                         delete apple;
                         apple = nullptr;
                     }
                     else
                     {
-                        SDL_Log("CREATED Apple");
                         apple = new Apple(window);
                     }
                 }
@@ -162,22 +152,29 @@ void Framework::HandleEvents()
             GM::GetInstance()->PrintArray();
             if (field != nullptr)
             {
-                SDL_Log("DELETED FIELD");
                 delete field;
                 field = nullptr;
             }
             else
             {
-                SDL_Log("CREATED FIELD");
                 field = new Field(window);
             }
+        }
+
+        if(snake)
+        {
+            snake->HandleInput(event);
         }
     }
 }
 
 void Framework::Update()
 {
-    // std::cout << "123" << std::endl;
+    double dt = SimpleTimer::GetInstance()->GetDeltaTime();
+     if (snake)
+    {
+        snake->Update(dt);
+    }
 }
 
 void Framework::Render()
@@ -188,7 +185,6 @@ void Framework::Render()
 
         SDL_RenderClear(renderer);
 
-        
         if (field)
         {
             field->Render(renderer);
@@ -234,6 +230,7 @@ bool Framework::LoadMedia()
 {
     GM::GetInstance();
     GM::GetInstance()->RefreshSquareSize(window);
+
     field = new Field(window);
 
     apple = new Apple(window);

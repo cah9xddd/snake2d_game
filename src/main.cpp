@@ -4,7 +4,7 @@
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_sdlrenderer.h"
 #include <iostream>
-
+#include "Timer/Timer.h"
 #if !SDL_VERSION_ATLEAST(2, 0, 17)
 #error This backend requires SDL 2.0.17+ because of SDL_RenderGeometry() function
 #endif
@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
     {
         std::cout << "Failed initialize framework\n";
     }
-    else 
+    else
     {
         if (!framework->LoadMedia())
         {
@@ -32,6 +32,8 @@ int main(int argc, char* argv[])
         framework->Update();
 
         framework->Render();
+
+        SimpleTimer::GetInstance()->Tick();
     }
 
     framework->Close();

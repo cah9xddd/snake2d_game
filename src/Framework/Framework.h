@@ -13,6 +13,9 @@
 #include "GameObject/Snake/Snake.h"
 #include "GameObject/Apple/Apple.h"
 #include "Game_Manager/GM.h"
+#include "Timer/Timer.h"
+
+
 class Framework {
 public:
     bool Init(const char* title, int x, int y, int w, int h, bool fullscreen);
@@ -28,17 +31,18 @@ public:
     inline SDL_Window* GetWindow() { return window; }
     inline UI_Manager* GetUI() { return ui_manager; }
 
-
-    Uint32 SCREEN_WIDTH;
-    Uint32 SCREEN_HEIGHT;
+    int SCREEN_WIDTH;
+    int SCREEN_HEIGHT;
 
 private:
     SDL_Window* window;
     SDL_Renderer* renderer;
     UI_Manager* ui_manager;
-    Field* field;
+
+    GameObject* field;
     GameObject* apple;
     GameObject* snake;
+
     bool isRunning = false;
     bool isUpdating = true;
 };

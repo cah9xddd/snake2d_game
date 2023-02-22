@@ -5,6 +5,7 @@ Apple::Apple(SDL_Window* window) : GameObject(window)
     auto renderer = SDL_GetRenderer(window);
     texture = IMG_LoadTexture(renderer, "assets/sprites/apple.png");
     RandomApplePos();
+    std::cout << coordinates << std::endl;
 }
 Apple::~Apple()
 {
@@ -13,17 +14,17 @@ Apple::~Apple()
 
 void Apple::RandomApplePos()
 {
-    int pos_x = rand() % 15;
-    int pos_y = rand() % 15;
+    int pos_x = rand() % 28;
+    int pos_y = rand() % 16;
 
-    while (GM::GetInstance()->CheckSquare(pos_x, pos_y) != 0)
+    while (GM::GetInstance()->CheckSquare(Vector2<int>{pos_x ,pos_y}) != 0)
     {
-        int pos_x = rand() % 15;
-        int pos_y = rand() % 15;
+        pos_x = rand() % 28;
+        pos_y = rand() % 16;
     }
 
-    GM::GetInstance()->SetSquare(pos_x, pos_y, 2);
-    
+    GM::GetInstance()->SetSquare(Vector2<int> {pos_x, pos_y}, 2);
+
     position.x = pos_x * GM::GetInstance()->GetSquareSize().x;
     position.y = pos_y * GM::GetInstance()->GetSquareSize().y;
 
@@ -34,7 +35,7 @@ void Apple::RandomApplePos()
 
 void Apple::ClearApplePos()
 {
-    GM::GetInstance()->SetSquare(coordinates.x, coordinates.y, 0);
+    GM::GetInstance()->SetSquare(coordinates, 0);
 }
 
 void Apple::Render(SDL_Renderer* renderer)

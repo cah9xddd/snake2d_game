@@ -10,7 +10,4 @@ public:
     void ClearApplePos();
     void Render(SDL_Renderer* renderer) override;
     void UpdateWindowSize(SDL_Window* window) override;
-
-protected:
-    Vector2<int> coordinates;
 };

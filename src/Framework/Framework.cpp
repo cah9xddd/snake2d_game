@@ -36,14 +36,16 @@ bool Framework::Init(const char* title, int x, int y, int w, int h, bool fullscr
             SCREEN_WIDTH = w;
             SCREEN_HEIGHT = h;
         }
-        window = SDL_CreateWindow(title, x, y, SCREEN_WIDTH, SCREEN_HEIGHT, fullscreen | SDL_WINDOW_RESIZABLE);
+        window = SDL_CreateWindow(title, x, y, SCREEN_WIDTH, SCREEN_HEIGHT,
+                                  fullscreen | SDL_WINDOW_RESIZABLE);
         if (window == nullptr)
         {
             SDL_LogCritical(1, "Failed to initialize window : %s\n", SDL_GetError());
             return false;
         }
 
-        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+        renderer =
+            SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
         if (renderer == nullptr)
         {
             SDL_LogCritical(1, "Renderer could not be created! SDL Error: %s\n", SDL_GetError());
@@ -54,7 +56,8 @@ bool Framework::Init(const char* title, int x, int y, int w, int h, bool fullscr
         int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
         if (!(IMG_Init(imgFlags) & imgFlags))
         {
-            SDL_LogCritical(1, "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+            SDL_LogCritical(1, "SDL_image could not initialize! SDL_image Error: %s\n",
+                            IMG_GetError());
             return false;
         }
 
@@ -77,10 +80,7 @@ bool Framework::Init(const char* title, int x, int y, int w, int h, bool fullscr
         ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
         ImGui_ImplSDLRenderer_Init(renderer);
     }
-    else
-    {
-       std::cout << "Failed to initialize UI\n";
-    }
+    else { std::cout << "Failed to initialize UI\n"; }
 
     return isRunning = true;
 }
@@ -91,38 +91,26 @@ void Framework::HandleEvents()
     while (SDL_PollEvent(&event))
     {
         ImGui_ImplSDL2_ProcessEvent(&event);
-        if (event.type == SDL_QUIT)
-            isRunning = false;
-        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
+        if (event.type == SDL_QUIT) isRunning = false;
+        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE &&
+            event.window.windowID == SDL_GetWindowID(window))
             isRunning = false;
 
         if (event.type == SDL_WINDOWEVENT)
         {
             GM::GetInstance()->RefreshSquareSize(window);
-            if (field)
-            {
-                field->UpdateWindowSize(window);
-            }
-            if( apple)
-            {
-                apple->UpdateWindowSize(window);
-            }
-            if(snake)
-            {
-                snake->UpdateWindowSize(window);
-            }   
+            if (field) { field->UpdateWindowSize(window); }
+            if (apple) { apple->UpdateWindowSize(window); }
+            if (snake) { snake->UpdateWindowSize(window); }
             SDL_RenderPresent(renderer);
         }
 
         const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
         if (event.type == SDL_KEYDOWN)
-        {   
+        {
             if (event.key.repeat == 0)
             {
-                if (currentKeyStates[SDL_SCANCODE_ESCAPE])
-                {
-                    isRunning = false;
-                }
+                if (currentKeyStates[SDL_SCANCODE_ESCAPE]) { isRunning = false; }
                 if (currentKeyStates[SDL_SCANCODE_SPACE])
                 {
                     if (field != nullptr)
@@ -130,20 +118,14 @@ void Framework::HandleEvents()
                         delete field;
                         field = nullptr;
                     }
-                    else
-                    {
-                        field = new Field(window);
-                    }
+                    else { field = new Field(window); }
 
                     if (apple != nullptr)
                     {
                         delete apple;
                         apple = nullptr;
                     }
-                    else
-                    {
-                        apple = new Apple(window);
-                    }
+                    else { apple = new Apple(window); }
                 }
             }
         }
@@ -156,51 +138,44 @@ void Framework::HandleEvents()
                 delete field;
                 field = nullptr;
             }
-            else
-            {
-                field = new Field(window);
-            }
+            else { field = new Field(window); }
         }
 
-        if(snake)
-        {
-            snake->HandleInput(event);
-        }
+        if (snake) { snake->HandleInput(event); }
     }
 }
 
 void Framework::Update()
 {
     double dt = SimpleTimer::GetInstance()->GetDeltaTime();
-    if (snake)
+    if (!GM::GetInstance()->pause)
     {
-        snake->Update(dt);
+        if (GM::GetInstance()->AppleEaten(snake->GetCoordinates(), apple->GetCoordinates()))
+        {
+            snake->IncrementBody(apple->GetCoordinates());
+            apple->RandomApplePos();
+        }
+        else
+        {
+            if (snake)
+            {
+                snake->Update(dt);
+            }
+        }
     }
 }
 
 void Framework::Render()
 {
-    if (isUpdating)
-    {
         ui_manager->PrepareUI();
 
         SDL_RenderClear(renderer);
 
-        if (field)
-        {
-            field->Render(renderer);
-        }
-        if (apple)
-        {
-            apple->Render(renderer);
-        }
-        if (snake)
-        {
-            snake->Render(renderer);
-        }
+        if (field) { field->Render(renderer); }
+        if (apple) { apple->Render(renderer); }
+        if (snake) { snake->Render(renderer); }
         ui_manager->RenderUI();
         SDL_RenderPresent(renderer);
-    }
 }
 
 void Framework::Close()
@@ -235,7 +210,7 @@ bool Framework::LoadMedia()
     field = new Field(window);
 
     apple = new Apple(window);
-    
+
     snake = new Snake(window);
 
     return true;

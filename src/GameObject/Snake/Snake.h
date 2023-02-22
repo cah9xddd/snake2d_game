@@ -14,14 +14,16 @@ public:
     void Update(double delta_time) override;
     void HandleInput(SDL_Event& event) override;
     void UpdateWindowSize(SDL_Window* window) override;
+    void IncrementBody(Vector2<int> coords);
 
 protected:
     std::list<Vector2<int>> snake_body;
-
     float passed_time = 0;
-    float time_between_movements = 0.4f;
+    Vector2<int> prev_tail_coords;
 
-    int size = 1;
+    //vunesti kak float
+    float time_between_movements = 0.10f;
 
     Vector2<float> direction = {1.f, 0.f};
+    Vector2<float> new_direction = {1.f, 0.f};
 };

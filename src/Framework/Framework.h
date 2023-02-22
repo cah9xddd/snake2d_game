@@ -40,8 +40,8 @@ private:
     UI_Manager* ui_manager;
 
     GameObject* field;
-    GameObject* apple;
-    GameObject* snake;
+    Apple* apple;
+    Snake* snake;
 
     bool isRunning = false;
     bool isUpdating = true;

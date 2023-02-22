@@ -8,12 +8,14 @@ public:
     static GM* GetInstance() { return (GameManager != nullptr) ? GameManager : GameManager = new GM; };
     inline Vector2<float> GetSquareSize() { return square_size; };
     void PrintArray();
-    inline int CheckSquare(int x, int y) { return arr[x][y]; };
-    inline void SetSquare(int x, int y, int value) { arr[x][y] = value; };
+    inline int CheckSquare(Vector2<int> square) { return arr[square.x][square.y]; };
+    inline void SetSquare(Vector2<int> square ,int value) { arr[square.x][square.y] = value; };
     void RefreshSquareSize(SDL_Window* window);
-    void Update();
-private:
 
+    bool YouLose(Vector2<int> coords);
+    bool AppleEaten(Vector2<int> head_coordinates, Vector2<int> apple_coordinates);
+    bool pause = false;
+private :
     Vector2<float> square_size;
 
     static const int SIZE_X = 28;

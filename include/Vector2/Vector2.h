@@ -44,7 +44,7 @@ Vector2<T> operator/(const Vector2<T>& V1, B a)
 template <typename T>
 bool operator==(const Vector2<T>& V1, const Vector2<T>& V2)
 {
-    return (V1.x == V2.x && V2.y == V2.y);
+    return (V1.x == V2.x && V1.y == V2.y);
 }
 template <typename T>
 bool operator!=(const Vector2<T>& V1, const Vector2<T>& V2)

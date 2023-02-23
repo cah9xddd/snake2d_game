@@ -9,20 +9,16 @@
 #error This backend requires SDL 2.0.17+ because of SDL_RenderGeometry() function
 #endif
 
-Framework* framework = nullptr;
 int main(int argc, char* argv[])
 {
-    framework = new Framework();
+    Framework* framework = Framework::GetInstance();
     if (!framework->Init("GAME", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, false))
     {
         std::cout << "Failed initialize framework\n";
     }
     else
     {
-        if (!framework->LoadMedia())
-        {
-            std::cout << "Failed to load media!\n";
-        }
+        if (!framework->LoadMedia()) { std::cout << "Failed to load media!\n"; }
     }
 
     while (framework->Running())
@@ -35,7 +31,7 @@ int main(int argc, char* argv[])
 
         SimpleTimer::GetInstance()->Tick();
     }
-
+    
     framework->Close();
     return 0;
 }

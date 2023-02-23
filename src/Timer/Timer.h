@@ -14,8 +14,6 @@ private:
 
 
     static SimpleTimer* timer;
-
-
     SimpleTimer() {};
     SimpleTimer(SimpleTimer& other) = delete;
     void operator=(const SimpleTimer& other) = delete;

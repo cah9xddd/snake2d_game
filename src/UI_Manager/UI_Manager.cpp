@@ -5,54 +5,21 @@ UI_Manager::UI_Manager()
 #ifdef SDL_HINT_IME_SHOW_UI
     SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 #endif
-    // Setup Dear ImGui context
+    
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    SetUIColor(style_color);
+
+    ImGui::StyleColorsDark();
     ImGui::GetStyle().WindowBorderSize = 0.f;
+
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
+
     ImFontConfig config;
     config.SizePixels = 32;
-    auto asd = io.Fonts->AddFontFromFileTTF("assets/fonts/OpenSans-Regular.ttf", 32.f, &config, io.Fonts->GetGlyphRangesDefault());
+    auto asd = io.Fonts->AddFontFromFileTTF("assets/fonts/OpenSans-Regular.ttf", 32.f, &config,
+                                            io.Fonts->GetGlyphRangesDefault());
     IM_ASSERT(asd != nullptr);
-}
-
-void UI_Manager::SetUIColor(UI_Color_ color)
-{
-    switch (color)
-    {
-        case UI_Color_Classic:
-            ImGui::StyleColorsClassic();
-            style_color = UI_Color_Classic;
-            break;
-        case UI_Color_Dark:
-            ImGui::StyleColorsDark();
-            style_color = UI_Color_Dark;
-            break;
-        case UI_Color_Light:
-            ImGui::StyleColorsLight();
-            style_color = UI_Color_Light;
-            break;
-        default:
-            break;
-    }
-}
-
-void UI_Manager::ChangeUIColor()
-{
-    if (style_color == UI_Color_Light)
-    {
-        UI_Manager::SetUIColor(UI_Color_Classic);
-    }
-    else if (style_color == UI_Color_Classic)
-    {
-        UI_Manager::SetUIColor(UI_Color_Dark);
-    }
-    else if (style_color == UI_Color_Dark)
-    {
-        UI_Manager::SetUIColor(UI_Color_Light);
-    }
 }
 
 void UI_Manager::Close()
@@ -73,14 +40,14 @@ void UI_Manager::PrepareUI()
 {
     NewFrame();
 
-    GUI::CreateScoreWindow();
+    GUI::ShowScoreWindow();
 
-   // GUI::CreateSimpleWindow();
+    if(GM::GetInstance()->game_state == GAME_LOSE)
+    {
+        GUI::ShowRestartWindow();
+    }
 
     ImGui::Render();
 }
 
-void UI_Manager::RenderUI()
-{
-    ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
-}
+void UI_Manager::RenderUI() { ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData()); }

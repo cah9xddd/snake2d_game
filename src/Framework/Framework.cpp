@@ -2,6 +2,8 @@
 #include "GUI/GUI.h"
 #include <iostream>
 
+Framework* Framework::framework = nullptr;
+
 /// \param title the title of the window, in UTF-8 encoding
 /// \param x the x position of the window, `SDL_WINDOWPOS_CENTERED`, or
 ///          `SDL_WINDOWPOS_UNDEFINED`
@@ -91,10 +93,7 @@ void Framework::HandleEvents()
     while (SDL_PollEvent(&event))
     {
         ImGui_ImplSDL2_ProcessEvent(&event);
-        if (event.type == SDL_QUIT) isRunning = false;
-        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE &&
-            event.window.windowID == SDL_GetWindowID(window))
-            isRunning = false;
+        if (event.type == SDL_QUIT) { isRunning = false; }
 
         if (event.type == SDL_WINDOWEVENT)
         {
@@ -105,77 +104,72 @@ void Framework::HandleEvents()
             SDL_RenderPresent(renderer);
         }
 
-        const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
+        const Uint8* currentKeyStates = SDL_GetKeyboardState(nullptr);
         if (event.type == SDL_KEYDOWN)
         {
             if (event.key.repeat == 0)
             {
                 if (currentKeyStates[SDL_SCANCODE_ESCAPE]) { isRunning = false; }
-                if (currentKeyStates[SDL_SCANCODE_SPACE])
-                {
-                    if (field != nullptr)
-                    {
-                        delete field;
-                        field = nullptr;
-                    }
-                    else { field = new Field(window); }
-
-                    if (apple != nullptr)
-                    {
-                        delete apple;
-                        apple = nullptr;
-                    }
-                    else { apple = new Apple(window); }
-                }
             }
         }
 
         if (event.type == SDL_MOUSEBUTTONDOWN)
         {
-            GM::GetInstance()->PrintArray();
-            if (field != nullptr)
+            if (!game_manager->pause)
             {
-                delete field;
-                field = nullptr;
+                game_manager->PrintField();
+                if (field != nullptr)
+                {
+                    delete field;
+                    field = nullptr;
+                }
+                else { field = new Field(window); }
             }
-            else { field = new Field(window); }
         }
 
-        if (snake) { snake->HandleInput(event); }
+        if (!game_manager->pause) { snake->HandleInput(event); }
     }
 }
 
 void Framework::Update()
 {
     double dt = SimpleTimer::GetInstance()->GetDeltaTime();
-    if (!GM::GetInstance()->pause)
+    if (!game_manager->pause)
     {
-        if (GM::GetInstance()->AppleEaten(snake->GetCoordinates(), apple->GetCoordinates()))
+        if (game_manager->AppleEaten(snake->GetCoordinates(), apple->GetCoordinates()))
         {
+            if (apple->GetType() == Food::FOOD_TYPE_REVERSE)
+            {
+                snake->ReverseSnake();
+            }
             snake->IncrementBody(apple->GetCoordinates());
             apple->RandomApplePos();
         }
         else
         {
-            if (snake)
-            {
-                snake->Update(dt);
-            }
+            if (snake) { snake->Update(dt); }
+            if (apple) { apple->Update(dt); }
         }
+    }
+    else
+    {
+        if (game_manager->game_state == GAME_RESTART) { Restart(); }
+        else if (game_manager->game_state == GAME_EXIT) { isRunning = false; }
     }
 }
 
 void Framework::Render()
 {
-        ui_manager->PrepareUI();
+    ui_manager->PrepareUI();
 
-        SDL_RenderClear(renderer);
+    SDL_RenderClear(renderer);
 
-        if (field) { field->Render(renderer); }
-        if (apple) { apple->Render(renderer); }
-        if (snake) { snake->Render(renderer); }
-        ui_manager->RenderUI();
-        SDL_RenderPresent(renderer);
+    if (field) { field->Render(renderer); }
+    if (apple) { apple->Render(renderer); }
+    if (snake) { snake->Render(renderer); }
+
+    ui_manager->RenderUI();
+    SDL_RenderPresent(renderer);
 }
 
 void Framework::Close()
@@ -186,6 +180,8 @@ void Framework::Close()
     apple = nullptr;
     delete snake;
     snake = nullptr;
+    delete game_manager;
+    game_manager = nullptr;
 
     ui_manager->Close();
     ui_manager = nullptr;
@@ -204,14 +200,25 @@ void Framework::Close()
 
 bool Framework::LoadMedia()
 {
-    GM::GetInstance();
-    GM::GetInstance()->RefreshSquareSize(window);
+    game_manager = GM::GetInstance();
+    game_manager->RefreshSquareSize(window);
 
     field = new Field(window);
 
-    apple = new Apple(window);
-
     snake = new Snake(window);
 
+    apple = new Food(window);
+
     return true;
+}
+
+void Framework::Restart()
+{
+    game_manager->RestartGame();
+    snake->Create();
+    apple->RandomApplePos();
+
+    game_manager->pause = false;
+
+    game_manager->game_state = GAME_PLAYING;
 }

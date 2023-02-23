@@ -1,52 +1,7 @@
 #include "GUI.h"
 
-//ImVec4 GUI::CreateSimpleWindow()
-// {
-//     static bool show_demo_window = true;
-//     static bool show_another_window = false;
-//     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-//     // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-//     if (show_demo_window)
-//         ImGui::ShowDemoWindow(&show_demo_window);
-
-//     // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-//     {
-//         static float f = 0.0f;
-//         static int counter = 0;
-//         ImGui::SetNextWindowPos(ImVec2(0.f, 0.f));
-//         ImGui::Begin("Hello, world!");  // Create a window called "Hello, world!" and append into it.
-
-//         ImGui::Text("This is some useful text.");           // Display some text (you can use a format strings too)
-//         ImGui::Checkbox("Demo Window", &show_demo_window);  // Edit bools storing our window open/close state
-//         ImGui::Checkbox("Another Window", &show_another_window);
-
-//         ImGui::SliderFloat("float", &f, 0.0f, 1.0f);             // Edit 1 float using a slider from 0.0f to 1.0f
-//         ImGui::ColorEdit3("clear color", (float*)&clear_color);  // Edit 3 floats representing a color
-
-//         if (ImGui::Button("Button"))  // Buttons return true when clicked (most widgets return true when edited/activated)
-//             counter++;
-//         ImGui::SameLine();
-//         ImGui::Text("counter = %d", counter);
-
-//         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-//         ImGui::End();
-//     }
-
-//     // 3. Show another simple window.
-//     if (show_another_window)
-//     {
-//         ImGui::Begin("Another Window", &show_another_window);  // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-//         ImGui::Text("Hello from another window!");
-//         if (ImGui::Button("Close Me"))
-//             show_another_window = false;
-//         ImGui::End();
-//     }
-//     return clear_color;
-// }
-
 void TextCentered(std::string text, float margin)
 {
-
     ImVec2 window_size = ImGui::GetWindowSize();
 
     auto textWidth = ImGui::CalcTextSize(text.c_str()).x;
@@ -56,17 +11,53 @@ void TextCentered(std::string text, float margin)
 
     ImGui::Text(text.c_str());
 }
-
-void GUI::CreateScoreWindow()
+bool ButtonCentered(std::string text, float margin)
 {
-    
+    ImVec2 window_size = ImGui::GetWindowSize();
+    ImVec2 button_size;
+    button_size.x = window_size.x / 5;
+    button_size.y = window_size.y / 5;
+
+    ImGui::SetCursorPosX(window_size.x * 0.5f - button_size.x / 2);
+    ImGui::SetCursorPosY((window_size.y * 0.5f - button_size.y / 2) + margin);
+
+    return ImGui::Button(text.c_str(), button_size);
+}
+
+void GUI::ShowScoreWindow()
+{
     ImVec2 window_size = ImGui::GetMainViewport()->WorkSize;
 
     ImGui::SetNextWindowSize(ImVec2(window_size.x / 8.f, window_size.y));
     ImGui::SetNextWindowPos(ImVec2(window_size.x - window_size.x / 8.f, 0.f));
-    ImGui::Begin("Score", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration);
+    ImGui::Begin("Score", nullptr,
+                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize |
+                     ImGuiWindowFlags_NoDecoration);
 
     TextCentered("SCORE", 0.f);
-    TextCentered("SCORE", ImGui::GetFontSize());
+    TextCentered(std::to_string(GM::GetInstance()->score), ImGui::GetFontSize());
+
+    ImGui::End();
+}
+
+void GUI::ShowRestartWindow()
+{
+    ImVec2 window_size = ImGui::GetMainViewport()->WorkSize;
+
+    ImGui::SetNextWindowSize(ImVec2(window_size.x / 2, window_size.y / 2));
+    ImGui::SetNextWindowPos(ImVec2(window_size.x / 4, window_size.y / 4));
+    ImGui::Begin("Restart", nullptr,
+                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize |
+                     ImGuiWindowFlags_NoDecoration);
+
+    ImVec2 window_size2 = ImGui::GetWindowSize();
+    ImVec2 button_size;
+    button_size.y = window_size2.y / 4;
+
+    TextCentered("YOU LOSE", -button_size.y / 2);
+
+    if (ButtonCentered("RESTART", 0.f)) { GM::GetInstance()->game_state = GAME_RESTART; };
+    if (ButtonCentered("EXIT", button_size.y)) { GM::GetInstance()->game_state = GAME_EXIT; };
+
     ImGui::End();
 }

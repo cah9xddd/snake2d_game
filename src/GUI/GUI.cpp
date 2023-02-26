@@ -1,63 +1,105 @@
 #include "GUI.h"
 
-void TextCentered(std::string text, float margin)
-{
-    ImVec2 window_size = ImGui::GetWindowSize();
-
-    auto textWidth = ImGui::CalcTextSize(text.c_str()).x;
-
-    ImGui::SetCursorPosX((window_size.x - textWidth) * 0.5f);
-    ImGui::SetCursorPosY((window_size.y - textWidth) * 0.5f + margin);
-
-    ImGui::Text(text.c_str());
-}
-bool ButtonCentered(std::string text, float margin)
-{
-    ImVec2 window_size = ImGui::GetWindowSize();
-    ImVec2 button_size;
-    button_size.x = window_size.x / 5;
-    button_size.y = window_size.y / 5;
-
-    ImGui::SetCursorPosX(window_size.x * 0.5f - button_size.x / 2);
-    ImGui::SetCursorPosY((window_size.y * 0.5f - button_size.y / 2) + margin);
-
-    return ImGui::Button(text.c_str(), button_size);
-}
-
 void GUI::ShowScoreWindow()
 {
-    ImVec2 window_size = ImGui::GetMainViewport()->WorkSize;
+    ImVec2 viewport_size = ImGui::GetMainViewport()->WorkSize;
 
-    ImGui::SetNextWindowSize(ImVec2(window_size.x / 8.f, window_size.y));
-    ImGui::SetNextWindowPos(ImVec2(window_size.x - window_size.x / 8.f, 0.f));
+    ImGui::SetNextWindowSize(ImVec2(viewport_size.x / 8.f, viewport_size.y));
+    ImGui::SetNextWindowPos(ImVec2(viewport_size.x - viewport_size.x / 8.f, 0.f));
     ImGui::Begin("Score", nullptr,
-                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize |
-                     ImGuiWindowFlags_NoDecoration);
+                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration);
 
-    TextCentered("SCORE", 0.f);
-    TextCentered(std::to_string(GM::GetInstance()->score), ImGui::GetFontSize());
+    ImVec2 window_size = ImGui::GetWindowSize();
+
+    auto textWidth = ImGui::CalcTextSize("SCORE").x;
+    ImGui::SetCursorPosX((window_size.x - textWidth) * 0.5f);
+    ImGui::SetCursorPosY((window_size.y - textWidth) * 0.5f);
+    ImGui::Text("SCORE");
+
+    std::string str = std::to_string(Game_Manager::GetInstance()->GetScore());
+    textWidth = ImGui::CalcTextSize(str.c_str()).x;
+    ImGui::SetCursorPosX((window_size.x - textWidth) * 0.5f);
+    ImGui::SetCursorPosY((window_size.y - textWidth) * 0.5f + ImGui::GetFontSize());
+    ImGui::Text(str.c_str());
 
     ImGui::End();
 }
 
 void GUI::ShowRestartWindow()
 {
-    ImVec2 window_size = ImGui::GetMainViewport()->WorkSize;
+    ImVec2 viewport_size = ImGui::GetMainViewport()->WorkSize;
 
-    ImGui::SetNextWindowSize(ImVec2(window_size.x / 2, window_size.y / 2));
-    ImGui::SetNextWindowPos(ImVec2(window_size.x / 4, window_size.y / 4));
+    ImGui::SetNextWindowSize(ImVec2(viewport_size.x / 2.f, viewport_size.y / 2.f));
+    ImGui::SetNextWindowPos(ImVec2(viewport_size.x / 4.f, viewport_size.y / 4.f));
     ImGui::Begin("Restart", nullptr,
-                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize |
-                     ImGuiWindowFlags_NoDecoration);
+                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration);
 
-    ImVec2 window_size2 = ImGui::GetWindowSize();
+    ImVec2 window_size = ImGui::GetWindowSize();
+    ImVec2 button_size = {window_size.x / 2.f, window_size.y / 5.f};
+
+    std::string str = "SCORE : " + std::to_string(Game_Manager::GetInstance()->GetScore());
+    auto textWidth = ImGui::CalcTextSize(str.c_str()).x;
+    ImGui::SetCursorPosX((window_size.x - textWidth) * 0.5f);
+    ImGui::SetCursorPosY((window_size.y - textWidth) * 0.5f - button_size.y * 0.3f);
+    ImGui::Text(str.c_str());
+
+
+    ImGui::SetCursorPosX(window_size.x * 0.5f - button_size.x / 2);
+    ImGui::SetCursorPosY((window_size.y * 0.5f - button_size.y / 2));
+    if (ImGui::Button("RESTART", button_size)) { Game_Manager::GetInstance()->SetGameState(GAME_STATE_NEW_GAME); }
+
+    ImGui::SetCursorPosX(window_size.x * 0.5f - button_size.x / 2);
+    ImGui::SetCursorPosY((window_size.y * 0.5f + button_size.y / 1.5f));
+    if (ImGui::Button("EXIT", button_size)) { Game_Manager::GetInstance()->SetGameState(GAME_STATE_EXIT); }
+
+    ImGui::End();
+}
+
+void GUI::ShowMainMenu()
+{
+    ImVec2 viewport_size = ImGui::GetMainViewport()->WorkSize;
+
+    ImGui::SetNextWindowSize(ImVec2(viewport_size.x, viewport_size.y));
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::Begin("MainMenu", nullptr,
+                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration);
+
+    bool check_easy = false;
+    bool check_normal = false;
+    bool check_hard = false;
+    switch (Game_Manager::GetInstance()->GetDifficulty())
+    {
+        case DIFFICULTY_EASY: check_easy = true; break;
+        case DIFFICULTY_NORMAL: check_normal = true; break;
+        case DIFFICULTY_HARD: check_hard = true; break;
+        default: break;
+    }
+
+    ImGui::SetCursorPosX(viewport_size.x * 0.30f);
+    ImGui::SetCursorPosY(viewport_size.y * 0.45f);
+    if (ImGui::Checkbox("EASY", &check_easy)) { Game_Manager::GetInstance()->SetDifficulty(DIFFICULTY_EASY); }
+
+    auto textWidth = ImGui::CalcTextSize("NORMAL").x;
+    ImGui::SetCursorPosX(viewport_size.x * 0.5f - textWidth / 2.f);
+    ImGui::SetCursorPosY(viewport_size.y * 0.45f);
+    if (ImGui::Checkbox("NORMAL", &check_normal)) { Game_Manager::GetInstance()->SetDifficulty(DIFFICULTY_NORMAL); }
+
+    ImGui::SetCursorPosX(viewport_size.x * 0.5f + textWidth);
+    ImGui::SetCursorPosY(viewport_size.y * 0.45f);
+    if (ImGui::Checkbox("HARD", &check_hard)) { Game_Manager::GetInstance()->SetDifficulty(DIFFICULTY_HARD); }
+
     ImVec2 button_size;
-    button_size.y = window_size2.y / 4;
+    button_size.x = viewport_size.x / 4.f;
+    button_size.y = viewport_size.y / 8.f;
 
-    TextCentered("YOU LOSE", -button_size.y / 2);
+    ImGui::SetCursorPosX(viewport_size.x * 0.5f - button_size.x / 2);
+    ImGui::SetCursorPosY((viewport_size.y * 0.6f));
+    if (ImGui::Button("PLAY", button_size)) { Game_Manager::GetInstance()->SetGameState(GAME_STATE_NEW_GAME); }
 
-    if (ButtonCentered("RESTART", 0.f)) { GM::GetInstance()->game_state = GAME_RESTART; };
-    if (ButtonCentered("EXIT", button_size.y)) { GM::GetInstance()->game_state = GAME_EXIT; };
+    ImGui::SetCursorPosX(viewport_size.x * 0.5f - button_size.x / 2);
+    ImGui::SetCursorPosY((viewport_size.y * 0.6f) + button_size.y * 1.5f);
+    if (ImGui::Button("EXIT", button_size)) { Game_Manager::GetInstance()->SetGameState(GAME_STATE_EXIT); }
+
 
     ImGui::End();
 }

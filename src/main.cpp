@@ -5,6 +5,7 @@
 #include "imgui/imgui_impl_sdlrenderer.h"
 #include <iostream>
 #include "Timer/Timer.h"
+
 #if !SDL_VERSION_ATLEAST(2, 0, 17)
 #error This backend requires SDL 2.0.17+ because of SDL_RenderGeometry() function
 #endif
@@ -12,13 +13,13 @@
 int main(int argc, char* argv[])
 {
     Framework* framework = Framework::GetInstance();
-    if (!framework->Init("GAME", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, false))
+    if (!framework->Init("GAME", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, false))
     {
         std::cout << "Failed initialize framework\n";
     }
     else
     {
-        if (!framework->LoadMedia()) { std::cout << "Failed to load media!\n"; }
+        framework->LoadMedia();
     }
 
     while (framework->Running())

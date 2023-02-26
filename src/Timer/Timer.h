@@ -3,15 +3,14 @@
 
 class SimpleTimer {
 public:
-    static SimpleTimer* GetInstance() { return (timer != nullptr) ? timer : timer = new SimpleTimer; };
+    static SimpleTimer* GetInstance() ;
 
-    inline float GetDeltaTime() const { return delta_time; }
+    float GetDeltaTime() const;
     void Tick();
 
 private:
     float delta_time = 0;
     float last_time = 0;
-
 
     static SimpleTimer* timer;
     SimpleTimer() {};

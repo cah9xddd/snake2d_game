@@ -12,7 +12,7 @@ Framework* Framework::framework = nullptr;
 /// \param w the width of the window, in screen coordinates
 /// \param h the height of the window, in screen coordinates
 /// \param flags 0, or one or more SDL_WindowFlags OR'd together
-/// \return isRunning = true if all inits are ok , else false
+/// \return is_running = true if all inits are ok , else false
 bool Framework::Init(const char* title, int x, int y, int w, int h, bool fullscreen)
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
@@ -38,16 +38,15 @@ bool Framework::Init(const char* title, int x, int y, int w, int h, bool fullscr
             SCREEN_WIDTH = w;
             SCREEN_HEIGHT = h;
         }
-        window = SDL_CreateWindow(title, x, y, SCREEN_WIDTH, SCREEN_HEIGHT,
-                                  fullscreen | SDL_WINDOW_RESIZABLE);
+        window = SDL_CreateWindow(title, x, y, SCREEN_WIDTH, SCREEN_HEIGHT, fullscreen | SDL_WINDOW_RESIZABLE);
         if (window == nullptr)
         {
             SDL_LogCritical(1, "Failed to initialize window : %s\n", SDL_GetError());
             return false;
         }
+        SDL_SetWindowMinimumSize(window, 1280, 720);
 
-        renderer =
-            SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
         if (renderer == nullptr)
         {
             SDL_LogCritical(1, "Renderer could not be created! SDL Error: %s\n", SDL_GetError());
@@ -58,8 +57,7 @@ bool Framework::Init(const char* title, int x, int y, int w, int h, bool fullscr
         int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
         if (!(IMG_Init(imgFlags) & imgFlags))
         {
-            SDL_LogCritical(1, "SDL_image could not initialize! SDL_image Error: %s\n",
-                            IMG_GetError());
+            SDL_LogCritical(1, "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
             return false;
         }
 
@@ -81,10 +79,11 @@ bool Framework::Init(const char* title, int x, int y, int w, int h, bool fullscr
     {
         ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
         ImGui_ImplSDLRenderer_Init(renderer);
+        ui_manager->InitFontSize(window);
     }
     else { std::cout << "Failed to initialize UI\n"; }
 
-    return isRunning = true;
+    return is_running = true;
 }
 
 void Framework::HandleEvents()
@@ -93,14 +92,15 @@ void Framework::HandleEvents()
     while (SDL_PollEvent(&event))
     {
         ImGui_ImplSDL2_ProcessEvent(&event);
-        if (event.type == SDL_QUIT) { isRunning = false; }
+        if (event.type == SDL_QUIT) { is_running = false; }
 
-        if (event.type == SDL_WINDOWEVENT)
+        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
         {
-            GM::GetInstance()->RefreshSquareSize(window);
+            Game_Manager::GetInstance()->RefreshSquareSize(window);
             if (field) { field->UpdateWindowSize(window); }
-            if (apple) { apple->UpdateWindowSize(window); }
+            if (food) { food->UpdateWindowSize(window); }
             if (snake) { snake->UpdateWindowSize(window); }
+            if (background) { background->UpdateWindowSize(window); }
             SDL_RenderPresent(renderer);
         }
 
@@ -109,52 +109,70 @@ void Framework::HandleEvents()
         {
             if (event.key.repeat == 0)
             {
-                if (currentKeyStates[SDL_SCANCODE_ESCAPE]) { isRunning = false; }
-            }
-        }
-
-        if (event.type == SDL_MOUSEBUTTONDOWN)
-        {
-            if (!game_manager->pause)
-            {
-                game_manager->PrintField();
-                if (field != nullptr)
+                if (currentKeyStates[SDL_SCANCODE_ESCAPE]) 
                 {
-                    delete field;
-                    field = nullptr;
+                    if (game_manager->GetGameState() == GAME_STATE_MAIN_MENU)
+                    {
+                        is_running = false;
+                    }
+                    else
+                    {
+                        game_manager->SetGameState(GAME_STATE_MAIN_MENU); 
+                    }
                 }
-                else { field = new Field(window); }
+                if (currentKeyStates[SDL_SCANCODE_F1]) 
+                {
+                   
+                    game_manager->SetGameState(GAME_STATE_NEW_GAME);
+                }
             }
         }
-
-        if (!game_manager->pause) { snake->HandleInput(event); }
+        if (game_manager->GetGameState() == GAME_STATE_PLAYING) { snake->HandleInput(event); }
     }
 }
 
 void Framework::Update()
 {
     double dt = SimpleTimer::GetInstance()->GetDeltaTime();
-    if (!game_manager->pause)
+    switch (game_manager->GetGameState())
     {
-        if (game_manager->AppleEaten(snake->GetCoordinates(), apple->GetCoordinates()))
-        {
-            if (apple->GetType() == Food::FOOD_TYPE_REVERSE)
+        case (GAME_STATE_PLAYING): {
+            if (game_manager->IsFoodEaten(snake->GetCoordinates(), food->GetCoordinates()))
             {
-                snake->ReverseSnake();
+                game_manager->DecreaseFoodLeft();
+                if (game_manager->GetFoodLeft() == 0)
+                {
+                    game_manager->SetGameState(GAME_STATE_WIN);
+                    return;
+                }
+                if (food->GetFoodType() == Food::FOOD_TYPE_REVERSE) { snake->ReverseSnake(); }
+                game_manager->AddToScore(food->GetFoodType());
+                snake->IncrementBody();
+                food->CreateNewFood();
             }
-            snake->IncrementBody(apple->GetCoordinates());
-            apple->RandomApplePos();
+            else
+            {
+                if (snake) { snake->Update(dt); }
+                if (food) { food->Update(dt); }
+            }
+
+
+            break;
         }
-        else
-        {
-            if (snake) { snake->Update(dt); }
-            if (apple) { apple->Update(dt); }
+        case (GAME_STATE_LOSE): break;
+        case (GAME_STATE_WIN): break;
+        case (GAME_STATE_NEW_GAME): {
+            game_manager->RestartGame();
+            snake->Create(game_manager->GetDifficulty());
+            food->CreateNewFood();
+            game_manager->SetGameState(GAME_STATE_PLAYING);
+            break;
         }
-    }
-    else
-    {
-        if (game_manager->game_state == GAME_RESTART) { Restart(); }
-        else if (game_manager->game_state == GAME_EXIT) { isRunning = false; }
+        case (GAME_STATE_EXIT): {
+            is_running = false;
+            break;
+        }
+        default: break;
     }
 }
 
@@ -163,10 +181,30 @@ void Framework::Render()
     ui_manager->PrepareUI();
 
     SDL_RenderClear(renderer);
-
-    if (field) { field->Render(renderer); }
-    if (apple) { apple->Render(renderer); }
-    if (snake) { snake->Render(renderer); }
+    switch (game_manager->GetGameState())
+    {
+        case GAME_STATE_MAIN_MENU: {
+            if (background) { background->Render(renderer); }
+            break;
+        }
+        case GAME_STATE_PLAYING: {
+            if (field) { field->Render(renderer); }
+            if (food) { food->Render(renderer); }
+            if (snake) { snake->Render(renderer); }
+            break;
+        }
+        case GAME_STATE_LOSE: {
+            if (field) { field->Render(renderer); }
+            if (food) { food->Render(renderer); }
+            if (snake) { snake->Render(renderer); }
+        }
+        case GAME_STATE_WIN: {
+            if (field) { field->Render(renderer); }
+            if (food) { food->Render(renderer); }
+            if (snake) { snake->Render(renderer); }
+        }
+        default: break;
+    }
 
     ui_manager->RenderUI();
     SDL_RenderPresent(renderer);
@@ -176,49 +214,39 @@ void Framework::Close()
 {
     delete field;
     field = nullptr;
-    delete apple;
-    apple = nullptr;
+    delete food;
+    food = nullptr;
     delete snake;
     snake = nullptr;
+    delete background;
+    background = nullptr;
     delete game_manager;
     game_manager = nullptr;
 
+    // Close UI
     ui_manager->Close();
     ui_manager = nullptr;
-
     // Destroy window
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     window = nullptr;
     renderer = nullptr;
-
     // Quit SDL subsystems
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 }
 
-bool Framework::LoadMedia()
+void Framework::LoadMedia()
 {
-    game_manager = GM::GetInstance();
+    game_manager = Game_Manager::GetInstance();
     game_manager->RefreshSquareSize(window);
+
+    background = new Background(window);
 
     field = new Field(window);
 
     snake = new Snake(window);
 
-    apple = new Food(window);
-
-    return true;
-}
-
-void Framework::Restart()
-{
-    game_manager->RestartGame();
-    snake->Create();
-    apple->RandomApplePos();
-
-    game_manager->pause = false;
-
-    game_manager->game_state = GAME_PLAYING;
+    food = new Food(window);
 }

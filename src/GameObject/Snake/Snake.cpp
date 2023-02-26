@@ -3,56 +3,80 @@
 Snake::Snake(SDL_Window* window) : GameObject(window)
 {
     auto renderer = SDL_GetRenderer(window);
-    texture = IMG_LoadTexture(renderer, "assets/sprites/square1.png");
-
-
-    Create();
+    head_t = IMG_LoadTexture(renderer, "assets/sprites/square_head.png");
+    body_t = IMG_LoadTexture(renderer, "assets/sprites/square_body.png");
 }
 
-/// @brief create snake on constructing or recreate for restart 
-void Snake::Create()
+Snake::~Snake()
+{
+    SDL_DestroyTexture(head_t);
+    head_t = nullptr;
+    SDL_DestroyTexture(body_t);
+    body_t = nullptr;
+}
+
+/// @brief Create snake for new game
+/// @param difficulty set speed of snake, depends on difficulty lvl
+void Snake::Create(const DIFFICULTY_ difficulty = DIFFICULTY_NORMAL)
 {
     snake_body.clear();
 
-    int rand_x = rand() % GM::GetInstance()->SIZE_X / 2 + 2;
-    int rand_y = rand() % GM::GetInstance()->SIZE_Y;
-    snake_body.push_back(Vector2<int> {rand_x, rand_y});
-    snake_body.push_back(Vector2<int> {rand_x - 1, rand_y});
-    snake_body.push_back(Vector2<int> {rand_x - 2, rand_y});
+    int rand_x = rand() % Game_Manager::GetInstance()->SIZE_X / 2 + 2;
+    int rand_y = rand() % Game_Manager::GetInstance()->SIZE_Y;
+
+    snake_body.emplace_back(Vector2<int> {rand_x, rand_y});
+    snake_body.emplace_back(Vector2<int> {rand_x - 1, rand_y});
+    snake_body.emplace_back(Vector2<int> {rand_x - 2, rand_y});
 
     for (auto&& i : snake_body)
     {
-        GM::GetInstance()->SetSquare(i, 1);
+        Game_Manager::GetInstance()->SetSquare(i, 1);
     }
 
-    direction = { 1.f, 0.f };
-    new_direction = { 1.f, 0.f };
+    move_type = MOVE_TYPE_NORMAL;
+    direction = {1, 0};
+    new_direction = {1, 0};
+    time_between_movements = difficulty / 100.f;
 }
 
 void Snake::Update(double delta_time)
 {
-    Vector2<float> square_size = GM::GetInstance()->GetSquareSize();
+    Vector2<float> square_size = Game_Manager::GetInstance()->GetSquareSize();
+
     passed_time += delta_time;
 
-    if (time_between_movements < passed_time)
+    if (time_between_movements <= passed_time)
     {
         passed_time = 0;
-
         direction = new_direction;
 
-        if (GM::GetInstance()->YouLose(snake_body.front() + direction)) { return; }
-        coordinates = snake_body.front() + direction;
+        switch (move_type)
+        {
+            case MOVE_TYPE_NORMAL: {
+                if (Game_Manager::GetInstance()->CheckLose(snake_body.front() + direction)) { return; }
+                coordinates = snake_body.front() + direction;
+                Game_Manager::GetInstance()->SetSquare(snake_body.back(), 0);
 
-        GM::GetInstance()->SetSquare(snake_body.back(), 0);
+                prev_tail_coords = snake_body.back();
+                snake_body.pop_back();
 
-        prev_tail_coords = snake_body.back();
-        snake_body.pop_back();
+                snake_body.emplace_front(coordinates);
+                Game_Manager::GetInstance()->SetSquare(coordinates, 1);
+                break;
+            }
+            case MOVE_TYPE_REVERSED: {
+                if (Game_Manager::GetInstance()->CheckLose(snake_body.back() + direction)) { return; }
+                coordinates = snake_body.back() + direction;
+                Game_Manager::GetInstance()->SetSquare(snake_body.front(), 0);
 
-        snake_body.push_front(coordinates);
+                prev_tail_coords = snake_body.front();
+                snake_body.pop_front();
 
-        GM::GetInstance()->SetSquare(coordinates, 1);
-        GM::GetInstance()->PrintField();
-        return;
+                snake_body.emplace_back(coordinates);
+                Game_Manager::GetInstance()->SetSquare(coordinates, 1);
+                break;
+            }
+        }
     }
 }
 
@@ -63,108 +87,96 @@ void Snake::HandleInput(SDL_Event& event)
         switch (event.key.keysym.sym)
         {
             case SDLK_UP: {
-                if (direction.y != 1.f) { new_direction = {0.f, -1.f}; }
+                if (direction.y != 1) { new_direction = {0, -1}; }
                 break;
             }
             case SDLK_DOWN: {
-                if (direction.y != -1.f) { new_direction = {0.f, 1.f}; }
+                if (direction.y != -1) { new_direction = {0, 1}; }
                 break;
             }
             case SDLK_LEFT: {
-                if (direction.x != 1.f) { new_direction = {-1.f, 0.f}; }
+                if (direction.x != 1) { new_direction = {-1, 0}; }
                 break;
             }
             case SDLK_RIGHT: {
-                if (direction.x != -1.f) { new_direction = {1.f, 0.f}; }
+                if (direction.x != -1) { new_direction = {1, 0}; }
                 break;
             }
             case SDLK_w: {
-                if (direction.y != 1.f) { new_direction = {0.f, -1.f}; }
+                if (direction.y != 1) { new_direction = {0, -1}; }
                 break;
             }
             case SDLK_s: {
-                if (direction.y != -1.f) { new_direction = {0.f, 1.f}; }
+                if (direction.y != -1) { new_direction = {0, 1}; }
                 break;
             }
             case SDLK_a: {
-                if (direction.x != 1.f) { new_direction = {-1.f, 0.f}; }
+                if (direction.x != 1) { new_direction = {-1, 0}; }
                 break;
             }
             case SDLK_d: {
-                if (direction.x != -1.f) { new_direction = {1.f, 0.f}; }
+                if (direction.x != -1) { new_direction = {1, 0}; }
                 break;
             }
         }
     }
 }
 
-void Snake::IncrementBody(Vector2<int> coords) { snake_body.push_back(snake_body.back()); }
-
-void Snake::ReverseSnake() 
+void Snake::IncrementBody()
 {
-    std::list<Vector2<int>> temp(snake_body.end(),snake_body.begin());
-    snake_body = temp;
-    coordinates = snake_body.front();
-    GM::GetInstance()->ClearField();
-
-    new_direction.x = -new_direction.x;
-    new_direction.y = -new_direction.y;
+    if (move_type == MOVE_TYPE_NORMAL) { snake_body.push_back(snake_body.back()); }
+    else { snake_body.push_front(snake_body.front()); }
 }
 
+void Snake::ReverseSnake()
+{
+
+    if (move_type == MOVE_TYPE_NORMAL)
+    {
+        move_type = MOVE_TYPE_REVERSED;
+        coordinates = snake_body.back();
+    }
+    else
+    {
+        move_type = MOVE_TYPE_NORMAL;
+        coordinates = snake_body.front();
+    }
+    direction = new_direction = prev_tail_coords - coordinates;
+}
 
 void Snake::Render(SDL_Renderer* renderer)
 {
-    
-    auto square_size = GM::GetInstance()->GetSquareSize();
 
-    for (auto&& i : snake_body)
+    auto square_size = Game_Manager::GetInstance()->GetSquareSize();
+    if (move_type == MOVE_TYPE_NORMAL)
     {
-        SDL_Rect texture_rect;
-
-        texture_rect.x = (square_size.x * i.x);
-        texture_rect.y = (square_size.y * i.y);
-
-        texture_rect.w = square_size.x;
-        texture_rect.h = square_size.y;
-
-        SDL_RenderCopy(renderer, texture, nullptr, &texture_rect);
+        auto i = snake_body.begin();
+        auto k = snake_body.end();
+        for (; i != k; ++i)
+        {
+            SDL_Rect texture_rect;
+            texture_rect.x = (square_size.x * (*i).x);
+            texture_rect.y = (square_size.y * (*i).y);
+            texture_rect.w = square_size.x;
+            texture_rect.h = square_size.y;
+            if (i == snake_body.begin()) { SDL_RenderCopy(renderer, head_t, nullptr, &texture_rect); }
+            else { SDL_RenderCopy(renderer, body_t, nullptr, &texture_rect); }
+        }
     }
+    else
+    {
+        auto i = snake_body.rbegin();
+        auto k = snake_body.rend();
 
-    // auto it = snake_body.begin();
-    //  int size = snake_body.size();
-    //  float scale = 1.f;
-    //  float borderX = square_size.x * 0.0f;
-    //  float borderY = square_size.y * 0.0f;
-    //  for (int i = 0; i < size; ++i, ++it)
-    //  {
-    //      if (i == 1)
-    //      {
-    //          scale = 0.9f;
-    //          borderX = square_size.x * 0.05f;
-    //          borderY = square_size.y * 0.05f;
-    //      }
-    //       if (i == size - 2)
-    //      {
-    //          scale = 0.8f;
-    //          borderX = square_size.x * 0.1f;
-    //          borderY = square_size.y * 0.1f;
-    //      }
-    //      else if (i == size - 1)
-    //      {
-    //          scale = 0.7f;
-    //          borderX = square_size.x * 0.15f;
-    //          borderY = square_size.y * 0.15f;
-    //      }
-
-    //     SDL_Rect texture_rect;
-
-    //     texture_rect.x = (square_size.x * (*it).x) + borderX;
-    //     texture_rect.y = (square_size.y * (*it).y) + borderY;
-
-    //     texture_rect.w = square_size.x * scale;
-    //     texture_rect.h = square_size.y * scale;
-
-    //     SDL_RenderCopy(renderer, texture, nullptr, &texture_rect);
-    // }
-
+        for (; i != snake_body.rend(); ++i)
+        {
+            SDL_Rect texture_rect;
+            texture_rect.x = (square_size.x * (*i).x);
+            texture_rect.y = (square_size.y * (*i).y);
+            texture_rect.w = square_size.x;
+            texture_rect.h = square_size.y;
+            if (i == snake_body.rbegin()) { SDL_RenderCopy(renderer, head_t, nullptr, &texture_rect); }
+            else { SDL_RenderCopy(renderer, body_t, nullptr, &texture_rect); }
+        }
+    }
 }

@@ -13,10 +13,9 @@ public:
 
     virtual void UpdateWindowSize(SDL_Window* window);
 
-    inline Vector2<int> GetCoordinates() { return coordinates; }
+    Vector2<int> GetCoordinates() const;
 
 protected:
-    Vector2<float> position;
     Vector2<int> window_size;
     Vector2<int> coordinates;
 };

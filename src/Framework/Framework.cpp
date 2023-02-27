@@ -17,7 +17,7 @@ bool Framework::Init(const char *title, int x, int y, int w, int h, bool fullscr
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
     {
-        std::cout << "SDL initialized successfully.\n";
+        //std::cout << "SDL initialized successfully.\n";
 
         srand(SDL_GetTicks());
 

@@ -5,7 +5,6 @@ Food::Food(SDL_Window* window) : GameObject(window)
     auto renderer = SDL_GetRenderer(window);
     food_t = IMG_LoadTexture(renderer, "assets/sprites/apple.png");
     reverse_food_t = IMG_LoadTexture(renderer, "assets/sprites/reverse.png");
-    CreateNewFood();
 }
 
 Food::~Food()

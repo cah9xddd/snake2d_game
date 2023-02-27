@@ -3,7 +3,7 @@
 Snake game in neon style, with 2 types of food:
 * Normal food : just increasing your snake size.
 * Reverse food : reversing a snake and force movement to another direction.
-
+<img src="misc/gameplay.gif"/>
 ## You will need
 * [CMake](https://cmake.org/install/)
 * Make or Ninja

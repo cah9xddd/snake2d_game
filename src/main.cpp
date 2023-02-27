@@ -13,7 +13,7 @@
 int main(int argc, char* argv[])
 {
     Framework* framework = Framework::GetInstance();
-    if (!framework->Init("GAME", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, false))
+    if (!framework->Init("SNAKE2D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, true))
     {
         std::cout << "Failed initialize framework\n";
     }

@@ -45,7 +45,7 @@ void Snake::Update(double delta_time)
 
     passed_time += delta_time;
 
-    if (time_between_movements <= passed_time)
+    if (time_between_movements < passed_time)
     {
         passed_time = 0;
         direction = new_direction;

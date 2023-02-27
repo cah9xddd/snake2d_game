@@ -1,0 +1,73 @@
+#include "Food.h"
+
+Food::Food(SDL_Window* window) : GameObject(window)
+{
+    auto renderer = SDL_GetRenderer(window);
+    food_t = IMG_LoadTexture(renderer, "assets/sprites/apple.png");
+    reverse_food_t = IMG_LoadTexture(renderer, "assets/sprites/reverse.png");
+    CreateNewFood();
+}
+
+Food::~Food()
+{
+    SDL_DestroyTexture(food_t);
+    food_t = nullptr;
+    SDL_DestroyTexture(reverse_food_t);
+    reverse_food_t = nullptr;
+}
+
+void Food::CreateNewFood()
+{
+    int pos_x = rand() % Game_Manager::GetInstance()->SIZE_X;
+    int pos_y = rand() % Game_Manager::GetInstance()->SIZE_Y;
+
+    while (Game_Manager::GetInstance()->CheckSquare(Vector2<int> {pos_x, pos_y}) != 0)
+    {
+        pos_x = rand() % Game_Manager::GetInstance()->SIZE_X;
+        pos_y = rand() % Game_Manager::GetInstance()->SIZE_Y;
+    }
+
+    Game_Manager::GetInstance()->SetSquare(Vector2<int> {pos_x, pos_y}, 2);
+
+    coordinates.x = pos_x;
+    coordinates.y = pos_y;
+
+    scale = 1.f;
+    border = 0.0f;
+    shrinking = true;
+
+    int rand_t = rand() % 4;
+    if (rand_t != 3) { type = FOOD_TYPE_NORMAL; }
+    else { type = FOOD_TYPE_REVERSE; }
+}
+
+Food::FOOD_TYPE_ Food::GetFoodType() const { return type; }
+
+void Food::Render(SDL_Renderer* renderer)
+{
+    Vector2<float> square_size = Game_Manager::GetInstance()->GetSquareSize();
+
+    SDL_Rect texture_rect;
+    texture_rect.x = (coordinates.x * square_size.x) + (square_size.x * border);
+    texture_rect.y = (coordinates.y * square_size.y) + (square_size.y * border);
+    texture_rect.w = square_size.x * scale;
+    texture_rect.h = square_size.y * scale;
+    if (type == FOOD_TYPE_NORMAL) { SDL_RenderCopy(renderer, food_t, nullptr, &texture_rect); }
+    else { SDL_RenderCopy(renderer, reverse_food_t, nullptr, &texture_rect); }
+}
+
+void Food::Update(double delta_time)
+{
+    if (shrinking)
+    {
+        scale -= 0.2f * delta_time;
+        border += 0.1f * delta_time;
+    }
+    else
+    {
+        scale += 0.2f * delta_time;
+        border -= 0.1f * delta_time;
+    }
+
+    if (scale <= 0.8f || scale >= 1.1f) { shrinking = !shrinking; }
+}

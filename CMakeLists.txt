@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(SDL_GAME1)
+project(snake_game)
 
 if(WIN32)
         set(SDL2_DIR ${PROJECT_SOURCE_DIR}/lib/cmake/SDL2)

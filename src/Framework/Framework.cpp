@@ -2,7 +2,7 @@
 #include "GUI/GUI.h"
 #include <iostream>
 
-Framework* Framework::framework = nullptr;
+Framework *Framework::framework = nullptr;
 
 /// \param title the title of the window, in UTF-8 encoding
 /// \param x the x position of the window, `SDL_WINDOWPOS_CENTERED`, or
@@ -13,7 +13,7 @@ Framework* Framework::framework = nullptr;
 /// \param h the height of the window, in screen coordinates
 /// \param flags 0, or one or more SDL_WindowFlags OR'd together
 /// \return is_running = true if all inits are ok , else false
-bool Framework::Init(const char* title, int x, int y, int w, int h, bool fullscreen)
+bool Framework::Init(const char *title, int x, int y, int w, int h, bool fullscreen)
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
     {
@@ -38,7 +38,7 @@ bool Framework::Init(const char* title, int x, int y, int w, int h, bool fullscr
             SCREEN_WIDTH = w;
             SCREEN_HEIGHT = h;
         }
-        window = SDL_CreateWindow(title, x, y, SCREEN_WIDTH, SCREEN_HEIGHT, fullscreen | SDL_WINDOW_RESIZABLE);
+        window = SDL_CreateWindow(title, x, y, SCREEN_WIDTH, SCREEN_HEIGHT, fullscreen);
         if (window == nullptr)
         {
             SDL_LogCritical(1, "Failed to initialize window : %s\n", SDL_GetError());
@@ -81,7 +81,10 @@ bool Framework::Init(const char* title, int x, int y, int w, int h, bool fullscr
         ImGui_ImplSDLRenderer_Init(renderer);
         ui_manager->InitFontSize(window);
     }
-    else { std::cout << "Failed to initialize UI\n"; }
+    else
+    {
+        std::cout << "Failed to initialize UI\n";
+    }
 
     return is_running = true;
 }
@@ -92,24 +95,39 @@ void Framework::HandleEvents()
     while (SDL_PollEvent(&event))
     {
         ImGui_ImplSDL2_ProcessEvent(&event);
-        if (event.type == SDL_QUIT) { is_running = false; }
+        if (event.type == SDL_QUIT)
+        {
+            is_running = false;
+        }
 
         if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
         {
             Game_Manager::GetInstance()->RefreshSquareSize(window);
-            if (field) { field->UpdateWindowSize(window); }
-            if (food) { food->UpdateWindowSize(window); }
-            if (snake) { snake->UpdateWindowSize(window); }
-            if (background) { background->UpdateWindowSize(window); }
+            if (field)
+            {
+                field->UpdateWindowSize(window);
+            }
+            if (food)
+            {
+                food->UpdateWindowSize(window);
+            }
+            if (snake)
+            {
+                snake->UpdateWindowSize(window);
+            }
+            if (background)
+            {
+                background->UpdateWindowSize(window);
+            }
             SDL_RenderPresent(renderer);
         }
 
-        const Uint8* currentKeyStates = SDL_GetKeyboardState(nullptr);
+        const Uint8 *currentKeyStates = SDL_GetKeyboardState(nullptr);
         if (event.type == SDL_KEYDOWN)
         {
             if (event.key.repeat == 0)
             {
-                if (currentKeyStates[SDL_SCANCODE_ESCAPE]) 
+                if (currentKeyStates[SDL_SCANCODE_ESCAPE])
                 {
                     if (game_manager->GetGameState() == GAME_STATE_MAIN_MENU)
                     {
@@ -117,17 +135,20 @@ void Framework::HandleEvents()
                     }
                     else
                     {
-                        game_manager->SetGameState(GAME_STATE_MAIN_MENU); 
+                        game_manager->SetGameState(GAME_STATE_MAIN_MENU);
                     }
                 }
-                if (currentKeyStates[SDL_SCANCODE_F1]) 
+                if (currentKeyStates[SDL_SCANCODE_F1])
                 {
-                   
+
                     game_manager->SetGameState(GAME_STATE_NEW_GAME);
                 }
             }
         }
-        if (game_manager->GetGameState() == GAME_STATE_PLAYING) { snake->HandleInput(event); }
+        if (game_manager->GetGameState() == GAME_STATE_PLAYING)
+        {
+            snake->HandleInput(event);
+        }
     }
 }
 
@@ -136,43 +157,57 @@ void Framework::Update()
     double dt = SimpleTimer::GetInstance()->GetDeltaTime();
     switch (game_manager->GetGameState())
     {
-        case (GAME_STATE_PLAYING): {
-            if (game_manager->IsFoodEaten(snake->GetCoordinates(), food->GetCoordinates()))
+    case (GAME_STATE_PLAYING):
+    {
+        if (game_manager->IsFoodEaten(snake->GetCoordinates(), food->GetCoordinates()))
+        {
+            game_manager->DecreaseFoodLeft();
+            if (game_manager->GetFoodLeft() == 0)
             {
-                game_manager->DecreaseFoodLeft();
-                if (game_manager->GetFoodLeft() == 0)
-                {
-                    game_manager->SetGameState(GAME_STATE_WIN);
-                    return;
-                }
-                if (food->GetFoodType() == Food::FOOD_TYPE_REVERSE) { snake->ReverseSnake(); }
-                game_manager->AddToScore(food->GetFoodType());
-                snake->IncrementBody();
-                food->CreateNewFood();
+                game_manager->SetGameState(GAME_STATE_WIN);
+                return;
             }
-            else
+            if (food->GetFoodType() == Food::FOOD_TYPE_REVERSE)
             {
-                if (snake) { snake->Update(dt); }
-                if (food) { food->Update(dt); }
+                snake->ReverseSnake();
             }
-
-
-            break;
-        }
-        case (GAME_STATE_LOSE): break;
-        case (GAME_STATE_WIN): break;
-        case (GAME_STATE_NEW_GAME): {
-            game_manager->RestartGame();
-            snake->Create(game_manager->GetDifficulty());
+            game_manager->AddToScore(food->GetFoodType());
+            snake->IncrementBody();
             food->CreateNewFood();
-            game_manager->SetGameState(GAME_STATE_PLAYING);
-            break;
         }
-        case (GAME_STATE_EXIT): {
-            is_running = false;
-            break;
+        else
+        {
+            if (snake)
+            {
+                snake->Update(dt);
+            }
+            if (food)
+            {
+                food->Update(dt);
+            }
         }
-        default: break;
+
+        break;
+    }
+    case (GAME_STATE_LOSE):
+        break;
+    case (GAME_STATE_WIN):
+        break;
+    case (GAME_STATE_NEW_GAME):
+    {
+        game_manager->RestartGame();
+        snake->Create(game_manager->GetDifficulty());
+        food->CreateNewFood();
+        game_manager->SetGameState(GAME_STATE_PLAYING);
+        break;
+    }
+    case (GAME_STATE_EXIT):
+    {
+        is_running = false;
+        break;
+    }
+    default:
+        break;
     }
 }
 
@@ -183,27 +218,46 @@ void Framework::Render()
     SDL_RenderClear(renderer);
     switch (game_manager->GetGameState())
     {
-        case GAME_STATE_MAIN_MENU: {
-            if (background) { background->Render(renderer); }
-            break;
+    case GAME_STATE_MAIN_MENU:
+    {
+        if (background)
+        {
+            background->Render(renderer);
         }
-        case GAME_STATE_PLAYING: {
-            if (field) { field->Render(renderer); }
-            if (food) { food->Render(renderer); }
-            if (snake) { snake->Render(renderer); }
-            break;
+        break;
+    }
+    case GAME_STATE_PLAYING:
+    {
+        if (field)
+        {
+            field->Render(renderer);
         }
-        case GAME_STATE_LOSE: {
-            if (field) { field->Render(renderer); }
-            if (food) { food->Render(renderer); }
-            if (snake) { snake->Render(renderer); }
+        if (food)
+        {
+            food->Render(renderer);
         }
-        case GAME_STATE_WIN: {
-            if (field) { field->Render(renderer); }
-            if (food) { food->Render(renderer); }
-            if (snake) { snake->Render(renderer); }
+        if (snake)
+        {
+            snake->Render(renderer);
         }
-        default: break;
+        break;
+    }
+    default:
+    {
+        if (field)
+        {
+            field->Render(renderer);
+        }
+        if (food)
+        {
+            food->Render(renderer);
+        }
+        if (snake)
+        {
+            snake->Render(renderer);
+        }
+        break;
+    }
     }
 
     ui_manager->RenderUI();

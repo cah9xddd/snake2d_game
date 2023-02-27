@@ -14,7 +14,7 @@ Snake game in neon style, with 2 types of food:
 1. Clone this repo to your folder with `git clone https://github.com/cah9xddd/snake2d_game.git`
 2. Make a build directory in the top level directory :
   * Linux : `mkdir build && cd build`; 
-  * Windows : PowerShell(`mkdir build; cd build`);
+  * Windows : `mkdir build; cd build`;
 3. Compile : 
 * Linux : `cmake .. && cmake --build .`;
 * Windows : currently not supporting MSVC so u must use Ninja or Unix Makefiles or similar , like :

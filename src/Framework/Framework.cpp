@@ -25,20 +25,22 @@ bool Framework::Init(const char *title, int x, int y, int w, int h, bool fullscr
         {
             std::cout << "Warning: Linear texture filtering not enabled!\n";
         }
-
+        Uint32 flags; 
         if (fullscreen)
         {
             SDL_DisplayMode current;
             SDL_GetCurrentDisplayMode(0, &current);
             SCREEN_WIDTH = current.w;
             SCREEN_HEIGHT = current.h;
+            flags = SDL_WINDOW_FULLSCREEN_DESKTOP;
         }
         else
         {
             SCREEN_WIDTH = w;
             SCREEN_HEIGHT = h;
+            flags = SDL_WINDOW_RESIZABLE;
         }
-        window = SDL_CreateWindow(title, x, y, SCREEN_WIDTH, SCREEN_HEIGHT, fullscreen);
+        window = SDL_CreateWindow(title, x, y, SCREEN_WIDTH, SCREEN_HEIGHT, flags);
         if (window == nullptr)
         {
             SDL_LogCritical(1, "Failed to initialize window : %s\n", SDL_GetError());

@@ -4,7 +4,7 @@
 #include "Vector2/Vector2.h"
 class GameObject {
 public:
-    GameObject(SDL_Window* window);
+    explicit GameObject(SDL_Window* window);
     virtual ~GameObject() {};
 
     virtual void Render(SDL_Renderer* renderer) = 0;

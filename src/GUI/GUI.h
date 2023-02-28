@@ -1,5 +1,5 @@
 #pragma once
-#include "Game_Manager/Game_Manager.h"
+#include "GameManager/GameManager.h"
 #include "SDL2/SDL.h"
 #include "imgui/imgui.h"
 #include <iostream>

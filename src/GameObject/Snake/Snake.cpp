@@ -1,6 +1,6 @@
 #include "Snake.h"
 
-Snake::Snake(SDL_Window* window) : GameObject(window)
+Snake::Snake(SDL_Window *window) : GameObject(window)
 {
     auto renderer = SDL_GetRenderer(window);
     head_t = IMG_LoadTexture(renderer, "assets/sprites/square_head.png");
@@ -21,16 +21,16 @@ void Snake::Create(const DIFFICULTY_ difficulty = DIFFICULTY_NORMAL)
 {
     snake_body.clear();
 
-    int rand_x = rand() % Game_Manager::GetInstance()->SIZE_X / 2 + 2;
-    int rand_y = rand() % Game_Manager::GetInstance()->SIZE_Y;
+    int rand_x = rand() % GameManager::GetInstance()->SIZE_X / 2 + 2;
+    int rand_y = rand() % GameManager::GetInstance()->SIZE_Y;
 
     snake_body.emplace_back(rand_x, rand_y);
     snake_body.emplace_back(rand_x - 1, rand_y);
     snake_body.emplace_back(rand_x - 2, rand_y);
 
-    for (auto&& i : snake_body)
+    for (auto &&i : snake_body)
     {
-        Game_Manager::GetInstance()->SetSquare(i, 1);
+        GameManager::GetInstance()->SetSquare(i, 1);
     }
 
     move_type = MOVE_TYPE_NORMAL;
@@ -41,7 +41,7 @@ void Snake::Create(const DIFFICULTY_ difficulty = DIFFICULTY_NORMAL)
 
 void Snake::Update(float delta_time)
 {
-    Vector2<float> square_size = Game_Manager::GetInstance()->GetSquareSize();
+    Vector2<float> square_size = GameManager::GetInstance()->GetSquareSize();
 
     passed_time += delta_time;
 
@@ -52,80 +52,126 @@ void Snake::Update(float delta_time)
 
         switch (move_type)
         {
-            case MOVE_TYPE_NORMAL: {
-                if (Game_Manager::GetInstance()->CheckLose(snake_body.front() + direction)) { return; }
-                coordinates = snake_body.front() + direction;
-                Game_Manager::GetInstance()->SetSquare(snake_body.back(), 0);
-
-                prev_tail_coords = snake_body.back();
-                snake_body.pop_back();
-
-                snake_body.emplace_front(coordinates);
-                Game_Manager::GetInstance()->SetSquare(coordinates, 1);
-                break;
+        case MOVE_TYPE_NORMAL:
+        {
+            if (GameManager::GetInstance()->CheckLose(snake_body.front() + direction))
+            {
+                return;
             }
-            case MOVE_TYPE_REVERSED: {
-                if (Game_Manager::GetInstance()->CheckLose(snake_body.back() + direction)) { return; }
-                coordinates = snake_body.back() + direction;
-                Game_Manager::GetInstance()->SetSquare(snake_body.front(), 0);
+            coordinates = snake_body.front() + direction;
+            GameManager::GetInstance()->SetSquare(snake_body.back(), 0);
 
-                prev_tail_coords = snake_body.front();
-                snake_body.pop_front();
+            prev_tail_coords = snake_body.back();
+            snake_body.pop_back();
 
-                snake_body.emplace_back(coordinates);
-                Game_Manager::GetInstance()->SetSquare(coordinates, 1);
-                break;
+            snake_body.emplace_front(coordinates);
+            GameManager::GetInstance()->SetSquare(coordinates, 1);
+            break;
+        }
+        case MOVE_TYPE_REVERSED:
+        {
+            if (GameManager::GetInstance()->CheckLose(snake_body.back() + direction))
+            {
+                return;
             }
+            coordinates = snake_body.back() + direction;
+            GameManager::GetInstance()->SetSquare(snake_body.front(), 0);
+
+            prev_tail_coords = snake_body.front();
+            snake_body.pop_front();
+
+            snake_body.emplace_back(coordinates);
+            GameManager::GetInstance()->SetSquare(coordinates, 1);
+            break;
+        }
         }
     }
 }
 
-void Snake::HandleInput(SDL_Event& event)
+void Snake::HandleInput(SDL_Event &event)
 {
     if (event.type == SDL_KEYDOWN && event.key.repeat == 0)
     {
         switch (event.key.keysym.sym)
         {
-            case SDLK_UP: {
-                if (direction.y != 1) { new_direction = {0, -1}; }
-                break;
+        case SDLK_UP:
+        {
+            if (direction.y != 1)
+            {
+                new_direction = {0, -1};
             }
-            case SDLK_DOWN: {
-                if (direction.y != -1) { new_direction = {0, 1}; }
-                break;
+            break;
+        }
+        case SDLK_DOWN:
+        {
+            if (direction.y != -1)
+            {
+                new_direction = {0, 1};
             }
-            case SDLK_LEFT: {
-                if (direction.x != 1) { new_direction = {-1, 0}; }
-                break;
+            break;
+        }
+        case SDLK_LEFT:
+        {
+            if (direction.x != 1)
+            {
+                new_direction = {-1, 0};
             }
-            case SDLK_RIGHT: {
-                if (direction.x != -1) { new_direction = {1, 0}; }
-                break;
+            break;
+        }
+        case SDLK_RIGHT:
+        {
+            if (direction.x != -1)
+            {
+                new_direction = {1, 0};
             }
-            case SDLK_w: {
-                if (direction.y != 1) { new_direction = {0, -1}; }
-                break;
+            break;
+        }
+        case SDLK_w:
+        {
+            if (direction.y != 1)
+            {
+                new_direction = {0, -1};
             }
-            case SDLK_s: {
-                if (direction.y != -1) { new_direction = {0, 1}; }
-                break;
+            break;
+        }
+        case SDLK_s:
+        {
+            if (direction.y != -1)
+            {
+                new_direction = {0, 1};
             }
-            case SDLK_a: {
-                if (direction.x != 1) { new_direction = {-1, 0}; }
-                break;
+            break;
+        }
+        case SDLK_a:
+        {
+            if (direction.x != 1)
+            {
+                new_direction = {-1, 0};
             }
-            case SDLK_d: {
-                if (direction.x != -1) { new_direction = {1, 0}; }
-                break;
+            break;
+        }
+        case SDLK_d:
+        {
+            if (direction.x != -1)
+            {
+                new_direction = {1, 0};
             }
+            break;
+        }
         }
     }
 }
 
 void Snake::IncrementBody()
 {
-    if (move_type == MOVE_TYPE_NORMAL) { snake_body.push_back(snake_body.back()); }
-    else { snake_body.push_front(snake_body.front()); }
+    if (move_type == MOVE_TYPE_NORMAL)
+    {
+        snake_body.push_back(snake_body.back());
+    }
+    else
+    {
+        snake_body.push_front(snake_body.front());
+    }
 }
 
 void Snake::ReverseSnake()
@@ -144,10 +190,10 @@ void Snake::ReverseSnake()
     direction = new_direction = prev_tail_coords - coordinates;
 }
 
-void Snake::Render(SDL_Renderer* renderer)
+void Snake::Render(SDL_Renderer *renderer)
 {
 
-    auto square_size = Game_Manager::GetInstance()->GetSquareSize();
+    auto square_size = GameManager::GetInstance()->GetSquareSize();
     if (move_type == MOVE_TYPE_NORMAL)
     {
         auto i = snake_body.begin();
@@ -159,8 +205,14 @@ void Snake::Render(SDL_Renderer* renderer)
             texture_rect.y = (square_size.y * (*i).y);
             texture_rect.w = square_size.x;
             texture_rect.h = square_size.y;
-            if (i == snake_body.begin()) { SDL_RenderCopy(renderer, head_t, nullptr, &texture_rect); }
-            else { SDL_RenderCopy(renderer, body_t, nullptr, &texture_rect); }
+            if (i == snake_body.begin())
+            {
+                SDL_RenderCopy(renderer, head_t, nullptr, &texture_rect);
+            }
+            else
+            {
+                SDL_RenderCopy(renderer, body_t, nullptr, &texture_rect);
+            }
         }
     }
     else
@@ -175,8 +227,14 @@ void Snake::Render(SDL_Renderer* renderer)
             texture_rect.y = (square_size.y * (*i).y);
             texture_rect.w = square_size.x;
             texture_rect.h = square_size.y;
-            if (i == snake_body.rbegin()) { SDL_RenderCopy(renderer, head_t, nullptr, &texture_rect); }
-            else { SDL_RenderCopy(renderer, body_t, nullptr, &texture_rect); }
+            if (i == snake_body.rbegin())
+            {
+                SDL_RenderCopy(renderer, head_t, nullptr, &texture_rect);
+            }
+            else
+            {
+                SDL_RenderCopy(renderer, body_t, nullptr, &texture_rect);
+            }
         }
     }
 }

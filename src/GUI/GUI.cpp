@@ -16,7 +16,7 @@ void GUI::ShowScoreWindow()
     ImGui::SetCursorPosY((window_size.y - textWidth) * 0.5f);
     ImGui::Text("SCORE");
 
-    std::string str = std::to_string(Game_Manager::GetInstance()->GetScore());
+    std::string str = std::to_string(GameManager::GetInstance()->GetScore());
     textWidth = ImGui::CalcTextSize(str.c_str()).x;
     ImGui::SetCursorPosX((window_size.x - textWidth) * 0.5f);
     ImGui::SetCursorPosY((window_size.y - textWidth) * 0.5f + ImGui::GetFontSize());
@@ -37,20 +37,25 @@ void GUI::ShowRestartWindow()
     ImVec2 window_size = ImGui::GetWindowSize();
     ImVec2 button_size = {window_size.x / 2.f, window_size.y / 5.f};
 
-    std::string str = "SCORE : " + std::to_string(Game_Manager::GetInstance()->GetScore());
+    std::string str = "SCORE : " + std::to_string(GameManager::GetInstance()->GetScore());
     auto textWidth = ImGui::CalcTextSize(str.c_str()).x;
     ImGui::SetCursorPosX((window_size.x - textWidth) * 0.5f);
     ImGui::SetCursorPosY((window_size.y - textWidth) * 0.5f - button_size.y * 0.3f);
     ImGui::Text(str.c_str());
 
-
     ImGui::SetCursorPosX(window_size.x * 0.5f - button_size.x / 2);
     ImGui::SetCursorPosY((window_size.y * 0.5f - button_size.y / 2));
-    if (ImGui::Button("RESTART", button_size)) { Game_Manager::GetInstance()->SetGameState(GAME_STATE_NEW_GAME); }
+    if (ImGui::Button("RESTART", button_size))
+    {
+        GameManager::GetInstance()->SetGameState(GAME_STATE_NEW_GAME);
+    }
 
     ImGui::SetCursorPosX(window_size.x * 0.5f - button_size.x / 2);
     ImGui::SetCursorPosY((window_size.y * 0.5f + button_size.y / 1.5f));
-    if (ImGui::Button("EXIT", button_size)) { Game_Manager::GetInstance()->SetGameState(GAME_STATE_EXIT); }
+    if (ImGui::Button("EXIT", button_size))
+    {
+        GameManager::GetInstance()->SetGameState(GAME_STATE_EXIT);
+    }
 
     ImGui::End();
 }
@@ -67,26 +72,42 @@ void GUI::ShowMainMenu()
     bool check_easy = false;
     bool check_normal = false;
     bool check_hard = false;
-    switch (Game_Manager::GetInstance()->GetDifficulty())
+    switch (GameManager::GetInstance()->GetDifficulty())
     {
-        case DIFFICULTY_EASY: check_easy = true; break;
-        case DIFFICULTY_NORMAL: check_normal = true; break;
-        case DIFFICULTY_HARD: check_hard = true; break;
-        default: break;
+    case DIFFICULTY_EASY:
+        check_easy = true;
+        break;
+    case DIFFICULTY_NORMAL:
+        check_normal = true;
+        break;
+    case DIFFICULTY_HARD:
+        check_hard = true;
+        break;
+    default:
+        break;
     }
 
     ImGui::SetCursorPosX(viewport_size.x * 0.30f);
     ImGui::SetCursorPosY(viewport_size.y * 0.45f);
-    if (ImGui::Checkbox("EASY", &check_easy)) { Game_Manager::GetInstance()->SetDifficulty(DIFFICULTY_EASY); }
+    if (ImGui::Checkbox("EASY", &check_easy))
+    {
+        GameManager::GetInstance()->SetDifficulty(DIFFICULTY_EASY);
+    }
 
     auto textWidth = ImGui::CalcTextSize("NORMAL").x;
     ImGui::SetCursorPosX(viewport_size.x * 0.5f - textWidth / 2.f);
     ImGui::SetCursorPosY(viewport_size.y * 0.45f);
-    if (ImGui::Checkbox("NORMAL", &check_normal)) { Game_Manager::GetInstance()->SetDifficulty(DIFFICULTY_NORMAL); }
+    if (ImGui::Checkbox("NORMAL", &check_normal))
+    {
+        GameManager::GetInstance()->SetDifficulty(DIFFICULTY_NORMAL);
+    }
 
     ImGui::SetCursorPosX(viewport_size.x * 0.5f + textWidth);
     ImGui::SetCursorPosY(viewport_size.y * 0.45f);
-    if (ImGui::Checkbox("HARD", &check_hard)) { Game_Manager::GetInstance()->SetDifficulty(DIFFICULTY_HARD); }
+    if (ImGui::Checkbox("HARD", &check_hard))
+    {
+        GameManager::GetInstance()->SetDifficulty(DIFFICULTY_HARD);
+    }
 
     ImVec2 button_size;
     button_size.x = viewport_size.x / 4.f;
@@ -94,12 +115,17 @@ void GUI::ShowMainMenu()
 
     ImGui::SetCursorPosX(viewport_size.x * 0.5f - button_size.x / 2);
     ImGui::SetCursorPosY((viewport_size.y * 0.6f));
-    if (ImGui::Button("PLAY", button_size)) { Game_Manager::GetInstance()->SetGameState(GAME_STATE_NEW_GAME); }
+    if (ImGui::Button("PLAY", button_size))
+    {
+        GameManager::GetInstance()->SetGameState(GAME_STATE_NEW_GAME);
+    }
 
     ImGui::SetCursorPosX(viewport_size.x * 0.5f - button_size.x / 2);
     ImGui::SetCursorPosY((viewport_size.y * 0.6f) + button_size.y * 1.5f);
-    if (ImGui::Button("EXIT", button_size)) { Game_Manager::GetInstance()->SetGameState(GAME_STATE_EXIT); }
-
+    if (ImGui::Button("EXIT", button_size))
+    {
+        GameManager::GetInstance()->SetGameState(GAME_STATE_EXIT);
+    }
 
     ImGui::End();
 }

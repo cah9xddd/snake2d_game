@@ -4,15 +4,16 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_sdlrenderer.h"
-class UI_Manager {
+class UIManager
+{
 public:
-    UI_Manager();
+    UIManager();
 
     void PrepareUI();
     void RenderUI();
     void Close();
 
-    void InitFontSize(SDL_Window* window);
+    void InitFontSize(SDL_Window *window);
 
 private:
     void NewFrame();

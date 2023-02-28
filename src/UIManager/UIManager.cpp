@@ -1,8 +1,8 @@
-#include "UI_Manager.h"
+#include "UIManager.h"
 
 /// @brief main init of our Dear ImGui
 /// here we`re creating context  and set style for UI
-UI_Manager::UI_Manager()
+UIManager::UIManager()
 {
 #ifdef SDL_HINT_IME_SHOW_UI
     SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
@@ -11,18 +11,17 @@ UI_Manager::UI_Manager()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
-    ImGuiIO& io = ImGui::GetIO();
+    ImGuiIO &io = ImGui::GetIO();
     (void)io;
     ImGui::StyleColorsClassic();
     ImGui::GetStyle().WindowBorderSize = 0.f;
 }
 
-
 /// @brief set our font proportional to window size
 /// @param window just our window
-void UI_Manager::InitFontSize(SDL_Window* window)
+void UIManager::InitFontSize(SDL_Window *window)
 {
-    ImGuiIO& io = ImGui::GetIO();
+    ImGuiIO &io = ImGui::GetIO();
     (void)io;
     int width = 0, height = 0;
     SDL_GetWindowSize(window, &width, &height);
@@ -35,7 +34,7 @@ void UI_Manager::InitFontSize(SDL_Window* window)
 }
 
 /// @brief must be called first at every frame and create new frame for UI
-void UI_Manager::NewFrame()
+void UIManager::NewFrame()
 {
     ImGui_ImplSDLRenderer_NewFrame();
     ImGui_ImplSDL2_NewFrame();
@@ -43,40 +42,45 @@ void UI_Manager::NewFrame()
 }
 
 /// @brief simpe func to prepare our UI for rendering , here we add our GUI functions
-void UI_Manager::PrepareUI()
+void UIManager::PrepareUI()
 {
     NewFrame();
 
-    switch (Game_Manager::GetInstance()->GetGameState())
+    switch (GameManager::GetInstance()->GetGameState())
     {
-        case GAME_STATE_MAIN_MENU: {
-            GUI::ShowMainMenu();
-            break;
-        }
-        case GAME_STATE_PLAYING: {
-            GUI::ShowScoreWindow();
-            break;
-        }
-        case GAME_STATE_LOSE: {
-            GUI::ShowScoreWindow();
-            GUI::ShowRestartWindow();
-            break;
-        }
-        case GAME_STATE_WIN: {
-            GUI::ShowScoreWindow();
-            GUI::ShowRestartWindow();
-            break;
-        }
-        default: break;
+    case GAME_STATE_MAIN_MENU:
+    {
+        GUI::ShowMainMenu();
+        break;
+    }
+    case GAME_STATE_PLAYING:
+    {
+        GUI::ShowScoreWindow();
+        break;
+    }
+    case GAME_STATE_LOSE:
+    {
+        GUI::ShowScoreWindow();
+        GUI::ShowRestartWindow();
+        break;
+    }
+    case GAME_STATE_WIN:
+    {
+        GUI::ShowScoreWindow();
+        GUI::ShowRestartWindow();
+        break;
+    }
+    default:
+        break;
     }
     ImGui::Render();
 }
 
 /// @brief  must be called last at every frame and will render our UI
-void UI_Manager::RenderUI() { ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData()); }
+void UIManager::RenderUI() { ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData()); }
 
 /// @brief we must close our context at the end
-void UI_Manager::Close()
+void UIManager::Close()
 {
     ImGui_ImplSDLRenderer_Shutdown();
     ImGui_ImplSDL2_Shutdown();

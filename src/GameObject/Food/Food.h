@@ -1,6 +1,6 @@
 #pragma once
 #include "GameObject/GameObject.h"
-#include "Game_Manager/Game_Manager.h"
+#include "GameManager/GameManager.h"
 #include "SDL2/SDL_image.h"
 class Food : public GameObject {
 public:
@@ -9,7 +9,7 @@ public:
         FOOD_TYPE_REVERSE = 20,
     };
 
-    Food(SDL_Window* window);
+    explicit Food(SDL_Window* window);
     ~Food() override;
 
     void Render(SDL_Renderer* renderer) override;

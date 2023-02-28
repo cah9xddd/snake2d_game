@@ -1,6 +1,6 @@
 #pragma once
 #include "GameObject/GameObject.h"
-#include "Game_Manager/Game_Manager.h"
+#include "GameManager/GameManager.h"
 #include "SDL2/SDL_image.h"
 #include <list>
 class Snake : public GameObject {
@@ -9,7 +9,7 @@ public:
         MOVE_TYPE_NORMAL = 0,
         MOVE_TYPE_REVERSED = 1,
     };
-    Snake(SDL_Window* window);
+    explicit Snake(SDL_Window *window);
     ~Snake() override;
 
     void Render(SDL_Renderer* renderer) override;

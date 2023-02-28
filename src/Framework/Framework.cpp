@@ -17,7 +17,7 @@ bool Framework::Init(const char *title, int x, int y, int w, int h, bool fullscr
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
     {
-        //std::cout << "SDL initialized successfully.\n";
+        // std::cout << "SDL initialized successfully.\n";
 
         srand(SDL_GetTicks());
 
@@ -25,22 +25,22 @@ bool Framework::Init(const char *title, int x, int y, int w, int h, bool fullscr
         {
             std::cout << "Warning: Linear texture filtering not enabled!\n";
         }
-        Uint32 flags; 
+        Uint32 flags;
         if (fullscreen)
         {
             SDL_DisplayMode current;
             SDL_GetCurrentDisplayMode(0, &current);
-            SCREEN_WIDTH = current.w;
-            SCREEN_HEIGHT = current.h;
+            screen_width = current.w;
+            screen_height = current.h;
             flags = SDL_WINDOW_FULLSCREEN_DESKTOP;
         }
         else
         {
-            SCREEN_WIDTH = w;
-            SCREEN_HEIGHT = h;
+            screen_width = w;
+            screen_height = h;
             flags = SDL_WINDOW_RESIZABLE;
         }
-        window = SDL_CreateWindow(title, x, y, SCREEN_WIDTH, SCREEN_HEIGHT, flags);
+        window = SDL_CreateWindow(title, x, y, screen_width, screen_height, flags);
         if (window == nullptr)
         {
             SDL_LogCritical(1, "Failed to initialize window : %s\n", SDL_GetError());
@@ -75,7 +75,7 @@ bool Framework::Init(const char *title, int x, int y, int w, int h, bool fullscr
         return false;
     }
 
-    ui_manager = new UI_Manager;
+    ui_manager = new UIManager;
 
     if (ui_manager)
     {
@@ -104,7 +104,7 @@ void Framework::HandleEvents()
 
         if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
         {
-            Game_Manager::GetInstance()->RefreshSquareSize(window);
+            GameManager::GetInstance()->RefreshSquareSize(window);
             if (field)
             {
                 field->UpdateWindowSize(window);
@@ -295,7 +295,7 @@ void Framework::Close()
 
 void Framework::LoadMedia()
 {
-    game_manager = Game_Manager::GetInstance();
+    game_manager = GameManager::GetInstance();
     game_manager->RefreshSquareSize(window);
 
     background = new Background(window);

@@ -5,7 +5,7 @@
 class Background : public GameObject {
 
 public:
-    Background(SDL_Window* window);
+    explicit Background(SDL_Window *window);
     ~Background() override;
 
     void Render(SDL_Renderer* renderer) override;

@@ -1,11 +1,11 @@
 #pragma once
 #include "GameObject/GameObject.h"
-#include "Game_Manager/Game_Manager.h"
+#include "GameManager/GameManager.h"
 #include "SDL2/SDL.h"
 #include "Vector2/Vector2.h"
 class Field : public GameObject {
 public:
-    Field(SDL_Window* window);
+    explicit Field(SDL_Window *window);
     ~Field() override {};
 
     void Render(SDL_Renderer* renderer) override;

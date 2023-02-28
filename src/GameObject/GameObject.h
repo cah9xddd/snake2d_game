@@ -8,7 +8,7 @@ public:
     virtual ~GameObject() {};
 
     virtual void Render(SDL_Renderer* renderer) = 0;
-    virtual void Update(double delta_time) = 0;
+    virtual void Update(float delta_time) = 0;
     virtual void HandleInput(SDL_Event& event) = 0;
 
     virtual void UpdateWindowSize(SDL_Window* window);

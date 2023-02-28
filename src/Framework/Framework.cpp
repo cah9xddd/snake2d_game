@@ -156,7 +156,7 @@ void Framework::HandleEvents()
 
 void Framework::Update()
 {
-    double dt = SimpleTimer::GetInstance()->GetDeltaTime();
+    float dt = SimpleTimer::GetInstance()->GetDeltaTime();
     switch (game_manager->GetGameState())
     {
     case (GAME_STATE_PLAYING):

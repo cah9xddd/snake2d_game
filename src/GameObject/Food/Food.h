@@ -10,10 +10,10 @@ public:
     };
 
     Food(SDL_Window* window);
-    ~Food();
+    ~Food() override;
 
     void Render(SDL_Renderer* renderer) override;
-    void Update(double delta_time) override;
+    void Update(float delta_time) override;
     void HandleInput(SDL_Event& event) override {};
 
     void CreateNewFood();

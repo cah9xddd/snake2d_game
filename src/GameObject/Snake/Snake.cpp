@@ -24,9 +24,9 @@ void Snake::Create(const DIFFICULTY_ difficulty = DIFFICULTY_NORMAL)
     int rand_x = rand() % Game_Manager::GetInstance()->SIZE_X / 2 + 2;
     int rand_y = rand() % Game_Manager::GetInstance()->SIZE_Y;
 
-    snake_body.emplace_back(Vector2<int> {rand_x, rand_y});
-    snake_body.emplace_back(Vector2<int> {rand_x - 1, rand_y});
-    snake_body.emplace_back(Vector2<int> {rand_x - 2, rand_y});
+    snake_body.emplace_back(rand_x, rand_y);
+    snake_body.emplace_back(rand_x - 1, rand_y);
+    snake_body.emplace_back(rand_x - 2, rand_y);
 
     for (auto&& i : snake_body)
     {
@@ -39,7 +39,7 @@ void Snake::Create(const DIFFICULTY_ difficulty = DIFFICULTY_NORMAL)
     time_between_movements = difficulty / 100.f;
 }
 
-void Snake::Update(double delta_time)
+void Snake::Update(float delta_time)
 {
     Vector2<float> square_size = Game_Manager::GetInstance()->GetSquareSize();
 

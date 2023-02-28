@@ -6,10 +6,10 @@ class Background : public GameObject {
 
 public:
     Background(SDL_Window* window);
-    ~Background();
+    ~Background() override;
 
     void Render(SDL_Renderer* renderer) override;
-    void Update(double delta_time) override {};
+    void Update(float delta_time) override {};
     void HandleInput(SDL_Event& event) override {};
 
 private:

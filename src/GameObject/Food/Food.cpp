@@ -55,7 +55,7 @@ void Food::Render(SDL_Renderer* renderer)
     else { SDL_RenderCopy(renderer, reverse_food_t, nullptr, &texture_rect); }
 }
 
-void Food::Update(double delta_time)
+void Food::Update(float delta_time)
 {
     if (shrinking)
     {

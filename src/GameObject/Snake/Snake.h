@@ -10,10 +10,10 @@ public:
         MOVE_TYPE_REVERSED = 1,
     };
     Snake(SDL_Window* window);
-    ~Snake();
+    ~Snake() override;
 
     void Render(SDL_Renderer* renderer) override;
-    void Update(double delta_time) override;
+    void Update(float delta_time) override;
     void HandleInput(SDL_Event& event) override;
 
     void Create(const DIFFICULTY_ difficulty);

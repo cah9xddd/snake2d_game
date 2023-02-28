@@ -1,8 +1,17 @@
 #include "UIManager.h"
 
+#include <iostream>
+
+#include "GUI/GUI.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_sdl2.h"
+#include "imgui/imgui_impl_sdlrenderer.h"
+
 /// @brief main init of our Dear ImGui
 /// here we`re creating context  and set style for UI
-UIManager::UIManager()
+/// set our font proportional to window size
+/// @param window just our window
+UIManager::UIManager(SDL_Window *window)
 {
 #ifdef SDL_HINT_IME_SHOW_UI
     SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
@@ -15,14 +24,7 @@ UIManager::UIManager()
     (void)io;
     ImGui::StyleColorsClassic();
     ImGui::GetStyle().WindowBorderSize = 0.f;
-}
 
-/// @brief set our font proportional to window size
-/// @param window just our window
-void UIManager::InitFontSize(SDL_Window *window)
-{
-    ImGuiIO &io = ImGui::GetIO();
-    (void)io;
     int width = 0, height = 0;
     SDL_GetWindowSize(window, &width, &height);
 
@@ -32,6 +34,16 @@ void UIManager::InitFontSize(SDL_Window *window)
                                             io.Fonts->GetGlyphRangesDefault());
     IM_ASSERT(asd != nullptr);
 }
+
+UIManager::~UIManager()
+{
+    std::cout << "UIMANAGER DECONSTRUCTOR" << std::endl;
+    ImGui_ImplSDLRenderer_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+}
+
+
 
 /// @brief must be called first at every frame and create new frame for UI
 void UIManager::NewFrame()
@@ -46,7 +58,7 @@ void UIManager::PrepareUI()
 {
     NewFrame();
 
-    switch (GameManager::GetInstance()->GetGameState())
+    switch (GameManager::GetInstance().GetGameState())
     {
     case GAME_STATE_MAIN_MENU:
     {

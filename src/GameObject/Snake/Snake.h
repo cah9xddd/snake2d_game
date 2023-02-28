@@ -1,8 +1,10 @@
 #pragma once
+#include <list>
+
 #include "GameObject/GameObject.h"
 #include "GameManager/GameManager.h"
-#include "SDL2/SDL_image.h"
-#include <list>
+
+
 class Snake : public GameObject {
 public:
     enum MOVE_TYPE_ {

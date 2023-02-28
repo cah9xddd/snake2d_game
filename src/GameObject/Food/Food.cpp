@@ -1,5 +1,7 @@
 #include "Food.h"
 
+#include "GameManager/GameManager.h"
+
 Food::Food(SDL_Window *window) : GameObject(window)
 {
     auto renderer = SDL_GetRenderer(window);
@@ -9,6 +11,7 @@ Food::Food(SDL_Window *window) : GameObject(window)
 
 Food::~Food()
 {
+    std::cout <<"FOOD DESTRUCTOR" << std::endl;
     SDL_DestroyTexture(food_t);
     food_t = nullptr;
     SDL_DestroyTexture(reverse_food_t);
@@ -17,16 +20,16 @@ Food::~Food()
 
 void Food::CreateNewFood()
 {
-    int pos_x = rand() % GameManager::GetInstance()->SIZE_X;
-    int pos_y = rand() % GameManager::GetInstance()->SIZE_Y;
+    int pos_x = rand() % GameManager::GetInstance().SIZE_X;
+    int pos_y = rand() % GameManager::GetInstance().SIZE_Y;
 
-    while (GameManager::GetInstance()->CheckSquare(Vector2<int>{pos_x, pos_y}) != 0)
+    while (GameManager::GetInstance().CheckSquare(Vector2<int>{pos_x, pos_y}) != 0)
     {
-        pos_x = rand() % GameManager::GetInstance()->SIZE_X;
-        pos_y = rand() % GameManager::GetInstance()->SIZE_Y;
+        pos_x = rand() % GameManager::GetInstance().SIZE_X;
+        pos_y = rand() % GameManager::GetInstance().SIZE_Y;
     }
 
-    GameManager::GetInstance()->SetSquare(Vector2<int>{pos_x, pos_y}, 2);
+    GameManager::GetInstance().SetSquare(Vector2<int>{pos_x, pos_y}, 2);
 
     coordinates.x = pos_x;
     coordinates.y = pos_y;
@@ -50,7 +53,7 @@ Food::FOOD_TYPE_ Food::GetFoodType() const { return type; }
 
 void Food::Render(SDL_Renderer *renderer)
 {
-    Vector2<float> square_size = GameManager::GetInstance()->GetSquareSize();
+    Vector2<float> square_size = GameManager::GetInstance().GetSquareSize();
 
     SDL_Rect texture_rect;
     texture_rect.x = (coordinates.x * square_size.x) + (square_size.x * border);

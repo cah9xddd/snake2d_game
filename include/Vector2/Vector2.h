@@ -4,12 +4,14 @@
 template<typename T>
 struct Vector2
 {
-    Vector2() {};
-    Vector2(T xx, T yy) : x(xx) , y (yy) {};
+    explicit Vector2() {};
+    explicit Vector2(T xx, T yy) : x(xx) , y (yy) {};
     
     T x = 0;
     T y = 0;
     T getLenght() const;
+
+    
 };
 template <typename T>
 Vector2<T> operator+(const Vector2<T>& V1, const Vector2<T>& V2) 

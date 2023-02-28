@@ -1,7 +1,8 @@
 #pragma once
-#include "GameObject/GameObject.h"
-#include "SDL2/SDL.h"
 #include <iostream>
+
+#include "GameObject/GameObject.h"
+
 class Background : public GameObject {
 
 public:
@@ -26,6 +27,7 @@ inline Background::Background(SDL_Window* window) : GameObject(window)
 
 inline Background::~Background()
 {
+    "BACKGROUND DESTRUCTOR";
     SDL_DestroyTexture(background_t);
     background_t = nullptr;
     SDL_DestroyTexture(game_name_t);

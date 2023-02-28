@@ -1,7 +1,8 @@
 #pragma once
+
 #include "GameObject/GameObject.h"
-#include "GameManager/GameManager.h"
-#include "SDL2/SDL_image.h"
+
+
 class Food : public GameObject {
 public:
     enum FOOD_TYPE_ {

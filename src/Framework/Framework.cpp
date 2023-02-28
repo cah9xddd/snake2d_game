@@ -1,8 +1,10 @@
 #include "Framework.h"
-#include "GUI/GUI.h"
+
 #include <iostream>
 
-Framework *Framework::framework = nullptr;
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_sdl2.h"
+#include "imgui/imgui_impl_sdlrenderer.h"
 
 /// \param title the title of the window, in UTF-8 encoding
 /// \param x the x position of the window, `SDL_WINDOWPOS_CENTERED`, or
@@ -13,82 +15,30 @@ Framework *Framework::framework = nullptr;
 /// \param h the height of the window, in screen coordinates
 /// \param flags 0, or one or more SDL_WindowFlags OR'd together
 /// \return is_running = true if all inits are ok , else false
-bool Framework::Init(const char *title, int x, int y, int w, int h, bool fullscreen)
+Framework::Framework(const char *game_title, int x, int y, int w, int h, bool fullscreen)
 {
-    if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
+    sdl_manager = std::make_unique<SDLManager>(game_title, x, y, w, h, fullscreen);
+    if (sdl_manager->GetSDLIsInitialized() == true)
     {
-        // std::cout << "SDL initialized successfully.\n";
-
-        srand(SDL_GetTicks());
-
-        if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
+        ui_manager = std::make_unique<UIManager>(sdl_manager->GetWindow());
+        if (ui_manager)
         {
-            std::cout << "Warning: Linear texture filtering not enabled!\n";
-        }
-        Uint32 flags;
-        if (fullscreen)
-        {
-            SDL_DisplayMode current;
-            SDL_GetCurrentDisplayMode(0, &current);
-            screen_width = current.w;
-            screen_height = current.h;
-            flags = SDL_WINDOW_FULLSCREEN_DESKTOP;
+            ImGui_ImplSDL2_InitForSDLRenderer(sdl_manager->GetWindow(), sdl_manager->GetRenderer());
+            ImGui_ImplSDLRenderer_Init(sdl_manager->GetRenderer());
+
+            LoadMedia();
+            is_running = true;
         }
         else
         {
-            screen_width = w;
-            screen_height = h;
-            flags = SDL_WINDOW_RESIZABLE;
-        }
-        window = SDL_CreateWindow(title, x, y, screen_width, screen_height, flags);
-        if (window == nullptr)
-        {
-            SDL_LogCritical(1, "Failed to initialize window : %s\n", SDL_GetError());
-            return false;
-        }
-        SDL_SetWindowMinimumSize(window, 1280, 720);
-
-        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-        if (renderer == nullptr)
-        {
-            SDL_LogCritical(1, "Renderer could not be created! SDL Error: %s\n", SDL_GetError());
-            return false;
-        }
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-
-        int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
-        if (!(IMG_Init(imgFlags) & imgFlags))
-        {
-            SDL_LogCritical(1, "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
-            return false;
-        }
-
-        if (TTF_Init() == -1)
-        {
-            SDL_LogCritical(1, "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
-            return false;
+            std::cout << "Failed to initialize UI and Load Media\n";
         }
     }
-    else
-    {
-        SDL_LogCritical(1, "Failed to initialize SDL: %s", SDL_GetError());
-        return false;
-    }
+}
 
-    ui_manager = new UIManager;
-
-    if (ui_manager)
-    {
-        ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
-        ImGui_ImplSDLRenderer_Init(renderer);
-        ui_manager->InitFontSize(window);
-    }
-    else
-    {
-        std::cout << "Failed to initialize UI\n";
-    }
-
-    return is_running = true;
+Framework::~Framework()
+{
+    std::cout << "FRAMEWORK DESTRUCTOR" << std::endl;
 }
 
 void Framework::HandleEvents()
@@ -104,24 +54,24 @@ void Framework::HandleEvents()
 
         if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
         {
-            GameManager::GetInstance()->RefreshSquareSize(window);
+            GameManager::GetInstance().RefreshSquareSize(sdl_manager->GetWindow());
             if (field)
             {
-                field->UpdateWindowSize(window);
+                field->UpdateWindowSize(sdl_manager->GetWindow());
             }
             if (food)
             {
-                food->UpdateWindowSize(window);
+                food->UpdateWindowSize(sdl_manager->GetWindow());
             }
             if (snake)
             {
-                snake->UpdateWindowSize(window);
+                snake->UpdateWindowSize(sdl_manager->GetWindow());
             }
             if (background)
             {
-                background->UpdateWindowSize(window);
+                background->UpdateWindowSize(sdl_manager->GetWindow());
             }
-            SDL_RenderPresent(renderer);
+            SDL_RenderPresent(sdl_manager->GetRenderer());
         }
 
         const Uint8 *currentKeyStates = SDL_GetKeyboardState(nullptr);
@@ -131,23 +81,23 @@ void Framework::HandleEvents()
             {
                 if (currentKeyStates[SDL_SCANCODE_ESCAPE])
                 {
-                    if (game_manager->GetGameState() == GAME_STATE_MAIN_MENU)
+                    if (GameManager::GetInstance().GetGameState() == GAME_STATE_MAIN_MENU)
                     {
                         is_running = false;
                     }
                     else
                     {
-                        game_manager->SetGameState(GAME_STATE_MAIN_MENU);
+                        GameManager::GetInstance().SetGameState(GAME_STATE_MAIN_MENU);
                     }
                 }
                 if (currentKeyStates[SDL_SCANCODE_F1])
                 {
 
-                    game_manager->SetGameState(GAME_STATE_NEW_GAME);
+                    GameManager::GetInstance().SetGameState(GAME_STATE_NEW_GAME);
                 }
             }
         }
-        if (game_manager->GetGameState() == GAME_STATE_PLAYING)
+        if (GameManager::GetInstance().GetGameState() == GAME_STATE_PLAYING)
         {
             snake->HandleInput(event);
         }
@@ -156,24 +106,24 @@ void Framework::HandleEvents()
 
 void Framework::Update()
 {
-    float dt = SimpleTimer::GetInstance()->GetDeltaTime();
-    switch (game_manager->GetGameState())
+    float dt = timer->GetDeltaTime();
+    switch (GameManager::GetInstance().GetGameState())
     {
     case (GAME_STATE_PLAYING):
     {
-        if (game_manager->IsFoodEaten(snake->GetCoordinates(), food->GetCoordinates()))
+        if (GameManager::GetInstance().IsFoodEaten(snake->GetCoordinates(), food->GetCoordinates()))
         {
-            game_manager->DecreaseFoodLeft();
-            if (game_manager->GetFoodLeft() == 0)
+            GameManager::GetInstance().DecreaseFoodLeft();
+            if (GameManager::GetInstance().GetFoodLeft() == 0)
             {
-                game_manager->SetGameState(GAME_STATE_WIN);
+                GameManager::GetInstance().SetGameState(GAME_STATE_WIN);
                 return;
             }
             if (food->GetFoodType() == Food::FOOD_TYPE_REVERSE)
             {
                 snake->ReverseSnake();
             }
-            game_manager->AddToScore(food->GetFoodType());
+            GameManager::GetInstance().AddToScore(food->GetFoodType());
             snake->IncrementBody();
             food->CreateNewFood();
         }
@@ -197,10 +147,10 @@ void Framework::Update()
         break;
     case (GAME_STATE_NEW_GAME):
     {
-        game_manager->RestartGame();
-        snake->Create(game_manager->GetDifficulty());
+        GameManager::GetInstance().RestartGame();
+        snake->Create(GameManager::GetInstance().GetDifficulty());
         food->CreateNewFood();
-        game_manager->SetGameState(GAME_STATE_PLAYING);
+        GameManager::GetInstance().SetGameState(GAME_STATE_PLAYING);
         break;
     }
     case (GAME_STATE_EXIT):
@@ -217,14 +167,14 @@ void Framework::Render()
 {
     ui_manager->PrepareUI();
 
-    SDL_RenderClear(renderer);
-    switch (game_manager->GetGameState())
+    SDL_RenderClear(sdl_manager->GetRenderer());
+    switch (GameManager::GetInstance().GetGameState())
     {
     case GAME_STATE_MAIN_MENU:
     {
         if (background)
         {
-            background->Render(renderer);
+            background->Render(sdl_manager->GetRenderer());
         }
         break;
     }
@@ -232,15 +182,15 @@ void Framework::Render()
     {
         if (field)
         {
-            field->Render(renderer);
+            field->Render(sdl_manager->GetRenderer());
         }
         if (food)
         {
-            food->Render(renderer);
+            food->Render(sdl_manager->GetRenderer());
         }
         if (snake)
         {
-            snake->Render(renderer);
+            snake->Render(sdl_manager->GetRenderer());
         }
         break;
     }
@@ -248,61 +198,40 @@ void Framework::Render()
     {
         if (field)
         {
-            field->Render(renderer);
+            field->Render(sdl_manager->GetRenderer());
         }
         if (food)
         {
-            food->Render(renderer);
+            food->Render(sdl_manager->GetRenderer());
         }
         if (snake)
         {
-            snake->Render(renderer);
+            snake->Render(sdl_manager->GetRenderer());
         }
         break;
     }
     }
 
     ui_manager->RenderUI();
-    SDL_RenderPresent(renderer);
-}
-
-void Framework::Close()
-{
-    delete field;
-    field = nullptr;
-    delete food;
-    food = nullptr;
-    delete snake;
-    snake = nullptr;
-    delete background;
-    background = nullptr;
-    delete game_manager;
-    game_manager = nullptr;
-
-    // Close UI
-    ui_manager->Close();
-    ui_manager = nullptr;
-    // Destroy window
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    window = nullptr;
-    renderer = nullptr;
-    // Quit SDL subsystems
-    TTF_Quit();
-    IMG_Quit();
-    SDL_Quit();
+    SDL_RenderPresent(sdl_manager->GetRenderer());
 }
 
 void Framework::LoadMedia()
 {
-    game_manager = GameManager::GetInstance();
-    game_manager->RefreshSquareSize(window);
+    GameManager::GetInstance().RefreshSquareSize(sdl_manager->GetWindow());
 
-    background = new Background(window);
+    timer = std::make_unique<Timer>();
 
-    field = new Field(window);
+    field = std::make_unique<Field>(sdl_manager->GetWindow());
 
-    snake = new Snake(window);
+    snake = std::make_unique<Snake>(sdl_manager->GetWindow());
 
-    food = new Food(window);
+    food = std::make_unique<Food>(sdl_manager->GetWindow());
+
+    background = std::make_unique<Background>(sdl_manager->GetWindow());
+}
+
+void Framework::TimerTick()
+{
+    timer->Tick();
 }

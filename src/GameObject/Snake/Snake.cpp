@@ -1,5 +1,6 @@
 #include "Snake.h"
 
+
 Snake::Snake(SDL_Window *window) : GameObject(window)
 {
     auto renderer = SDL_GetRenderer(window);
@@ -9,6 +10,7 @@ Snake::Snake(SDL_Window *window) : GameObject(window)
 
 Snake::~Snake()
 {
+    std::cout << "SNAKE DESTRUCTOR" << std::endl;
     SDL_DestroyTexture(head_t);
     head_t = nullptr;
     SDL_DestroyTexture(body_t);
@@ -21,8 +23,8 @@ void Snake::Create(const DIFFICULTY_ difficulty = DIFFICULTY_NORMAL)
 {
     snake_body.clear();
 
-    int rand_x = rand() % GameManager::GetInstance()->SIZE_X / 2 + 2;
-    int rand_y = rand() % GameManager::GetInstance()->SIZE_Y;
+    int rand_x = rand() % GameManager::GetInstance().SIZE_X / 2 + 2;
+    int rand_y = rand() % GameManager::GetInstance().SIZE_Y;
 
     snake_body.emplace_back(rand_x, rand_y);
     snake_body.emplace_back(rand_x - 1, rand_y);
@@ -30,18 +32,18 @@ void Snake::Create(const DIFFICULTY_ difficulty = DIFFICULTY_NORMAL)
 
     for (auto &&i : snake_body)
     {
-        GameManager::GetInstance()->SetSquare(i, 1);
+        GameManager::GetInstance().SetSquare(i, 1);
     }
 
     move_type = MOVE_TYPE_NORMAL;
-    direction = {1, 0};
-    new_direction = {1, 0};
+    direction = Vector2<int>(1, 0);
+    new_direction = Vector2<int>(1, 0);
     time_between_movements = difficulty / 100.f;
 }
 
 void Snake::Update(float delta_time)
 {
-    Vector2<float> square_size = GameManager::GetInstance()->GetSquareSize();
+    Vector2<float> square_size = GameManager::GetInstance().GetSquareSize();
 
     passed_time += delta_time;
 
@@ -54,34 +56,34 @@ void Snake::Update(float delta_time)
         {
         case MOVE_TYPE_NORMAL:
         {
-            if (GameManager::GetInstance()->CheckLose(snake_body.front() + direction))
+            if (GameManager::GetInstance().CheckLose(snake_body.front() + direction))
             {
                 return;
             }
             coordinates = snake_body.front() + direction;
-            GameManager::GetInstance()->SetSquare(snake_body.back(), 0);
+            GameManager::GetInstance().SetSquare(snake_body.back(), 0);
 
             prev_tail_coords = snake_body.back();
             snake_body.pop_back();
 
             snake_body.emplace_front(coordinates);
-            GameManager::GetInstance()->SetSquare(coordinates, 1);
+            GameManager::GetInstance().SetSquare(coordinates, 1);
             break;
         }
         case MOVE_TYPE_REVERSED:
         {
-            if (GameManager::GetInstance()->CheckLose(snake_body.back() + direction))
+            if (GameManager::GetInstance().CheckLose(snake_body.back() + direction))
             {
                 return;
             }
             coordinates = snake_body.back() + direction;
-            GameManager::GetInstance()->SetSquare(snake_body.front(), 0);
+            GameManager::GetInstance().SetSquare(snake_body.front(), 0);
 
             prev_tail_coords = snake_body.front();
             snake_body.pop_front();
 
             snake_body.emplace_back(coordinates);
-            GameManager::GetInstance()->SetSquare(coordinates, 1);
+            GameManager::GetInstance().SetSquare(coordinates, 1);
             break;
         }
         }
@@ -98,7 +100,7 @@ void Snake::HandleInput(SDL_Event &event)
         {
             if (direction.y != 1)
             {
-                new_direction = {0, -1};
+                new_direction = Vector2<int>(0,-1);
             }
             break;
         }
@@ -106,7 +108,7 @@ void Snake::HandleInput(SDL_Event &event)
         {
             if (direction.y != -1)
             {
-                new_direction = {0, 1};
+                new_direction = Vector2<int>(0, 1);
             }
             break;
         }
@@ -114,7 +116,7 @@ void Snake::HandleInput(SDL_Event &event)
         {
             if (direction.x != 1)
             {
-                new_direction = {-1, 0};
+                new_direction = Vector2<int>(-1 , 0);
             }
             break;
         }
@@ -122,7 +124,7 @@ void Snake::HandleInput(SDL_Event &event)
         {
             if (direction.x != -1)
             {
-                new_direction = {1, 0};
+                new_direction = Vector2<int>(1, 0);
             }
             break;
         }
@@ -130,7 +132,7 @@ void Snake::HandleInput(SDL_Event &event)
         {
             if (direction.y != 1)
             {
-                new_direction = {0, -1};
+                new_direction = Vector2<int>(0, -1);
             }
             break;
         }
@@ -138,7 +140,7 @@ void Snake::HandleInput(SDL_Event &event)
         {
             if (direction.y != -1)
             {
-                new_direction = {0, 1};
+                new_direction = Vector2<int>(0, 1);
             }
             break;
         }
@@ -146,7 +148,7 @@ void Snake::HandleInput(SDL_Event &event)
         {
             if (direction.x != 1)
             {
-                new_direction = {-1, 0};
+                new_direction = Vector2<int>(-1, 0);
             }
             break;
         }
@@ -154,7 +156,7 @@ void Snake::HandleInput(SDL_Event &event)
         {
             if (direction.x != -1)
             {
-                new_direction = {1, 0};
+                new_direction = Vector2<int>(1, 0);
             }
             break;
         }
@@ -193,7 +195,7 @@ void Snake::ReverseSnake()
 void Snake::Render(SDL_Renderer *renderer)
 {
 
-    auto square_size = GameManager::GetInstance()->GetSquareSize();
+    auto square_size = GameManager::GetInstance().GetSquareSize();
     if (move_type == MOVE_TYPE_NORMAL)
     {
         auto i = snake_body.begin();

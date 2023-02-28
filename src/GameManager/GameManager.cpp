@@ -2,14 +2,19 @@
 
 GameManager *GameManager::game_manager = nullptr;
 
-GameManager *GameManager::GetInstance()
+GameManager& GameManager::GetInstance()
 {
-    return (game_manager != nullptr) ? game_manager : game_manager = new GameManager;
+    if (game_manager == nullptr)
+    {
+        game_manager = new GameManager;
+        return *game_manager;
+    }
+    return *game_manager;
 }
 
-void GameManager::SetSquare(Vector2<int> square, int value) { field[square.x][square.y] = value; }
-
 Vector2<float> GameManager::GetSquareSize() const { return square_size; }
+
+void GameManager::SetSquare(Vector2<int> square, int value) { field[square.x][square.y] = value; }
 
 /// @param square square coords to check
 /// @return return square value
@@ -22,8 +27,8 @@ void GameManager::RefreshSquareSize(SDL_Window *window)
     int size_y = 0;
     SDL_GetWindowSize(window, &size_x, &size_y);
 
-    GameManager::GetInstance()->square_size.x = (size_x - (size_x / 8.f)) / (float)SIZE_X;
-    GameManager::GetInstance()->square_size.y = size_y / (float)SIZE_Y;
+    GameManager::GetInstance().square_size.x = (size_x - (size_x / 8.f)) / (float)SIZE_X;
+    GameManager::GetInstance().square_size.y = size_y / (float)SIZE_Y;
 }
 
 bool GameManager::CheckLose(Vector2<int> coords)
@@ -73,3 +78,10 @@ void GameManager::AddToScore(int num) { score += num; }
 int GameManager::GetFoodLeft() const { return food_left; }
 
 void GameManager::DecreaseFoodLeft() { --food_left; }
+
+GameManager::~GameManager()
+{
+    std::cout << "GameManager DESTRUCTOR" << std::endl;
+    delete game_manager;
+    game_manager = nullptr;
+}

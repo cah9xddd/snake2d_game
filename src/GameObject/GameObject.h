@@ -1,7 +1,9 @@
 #pragma once
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
+
 #include "Vector2/Vector2.h"
+
 class GameObject {
 public:
     explicit GameObject(SDL_Window* window);

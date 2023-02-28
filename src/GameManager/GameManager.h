@@ -1,7 +1,10 @@
 #pragma once
-#include "SDL2/SDL.h"
-#include "Vector2/Vector2.h"
 #include <iostream>
+
+#include "SDL2/SDL.h"
+
+#include "Vector2/Vector2.h"
+
 enum GAME_STATE_
 {
     GAME_STATE_MAIN_MENU = 0,
@@ -20,7 +23,7 @@ enum DIFFICULTY_
 class GameManager
 {
 public:
-    static GameManager *GetInstance();
+    static GameManager& GetInstance();
 
     static const int SIZE_X = 28;
     static const int SIZE_Y = 18;
@@ -34,15 +37,15 @@ public:
 
     bool CheckLose(Vector2<int> coords);
 
-    bool IsFoodEaten(Vector2<int> head_coordinates, Vector2<int> apple_coordinates);
+    bool IsFoodEaten(Vector2<int> head_coordinates, Vector2<int> food_coordinates);
 
     void RestartGame();
 
-    void SetDifficulty(DIFFICULTY_ new_difficulty);
     DIFFICULTY_ GetDifficulty() const;
+    void SetDifficulty(DIFFICULTY_ new_difficulty);
 
-    void SetGameState(GAME_STATE_ new_game_state);
     GAME_STATE_ GetGameState() const;
+    void SetGameState(GAME_STATE_ new_game_state);
 
     int GetScore() const;
     void AddToScore(int num);
@@ -63,6 +66,7 @@ private:
 
     static GameManager * game_manager;
     GameManager(){};
+    ~GameManager();
     GameManager(GameManager &other) = delete;
     void operator=(const GameManager &other) = delete;
 };

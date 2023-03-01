@@ -78,13 +78,13 @@ void Food::Update(std::chrono::milliseconds delta_time)
 {
     if (shrinking)
     {
-        scale -= delta_time.count() / 5000.f;
-        border += delta_time.count() / 10000.f;
+        scale -= delta_time.count() / 4000.f;
+        border += delta_time.count() / 8000.f;
     }
     else
     {
-        scale += delta_time.count() / 5000.f;
-        border -= delta_time.count() / 10000.f;
+        scale += delta_time.count() / 4000.f;
+        border -= delta_time.count() / 8000.f;
     }
 
     if (scale < 0.8f || scale > 1.1f)

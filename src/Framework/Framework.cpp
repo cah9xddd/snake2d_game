@@ -101,9 +101,7 @@ void Framework::HandleEvents()
 
 void Framework::Update()
 {
-
     auto dt = timer->GetDeltaTime();
-    std::cout << dt.count() << std::endl;
     switch (GameManager::GetInstance().GetGameState())
     {
     case (GAME_STATE_PLAYING):

@@ -85,8 +85,10 @@ void Framework::HandleEvents()
                 }
                 if (currentKeyStates[SDL_SCANCODE_F1])
                 {
-
-                    GameManager::GetInstance().SetGameState(GAME_STATE_NEW_GAME);
+                    if (GameManager::GetInstance().GetGameState() != GAME_STATE_MAIN_MENU)
+                    {
+                        GameManager::GetInstance().SetGameState(GAME_STATE_NEW_GAME);
+                    }
                 }
             }
         }

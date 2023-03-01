@@ -11,7 +11,7 @@ public:
         FOOD_TYPE_REVERSE = 20,
     };
 
-    explicit Food(SDL_Window *window);
+    Food(SDL_Renderer *renderer);
     ~Food() override;
 
     void Render(SDL_Renderer *renderer) override;
@@ -22,8 +22,12 @@ public:
 
     FOOD_TYPE_ GetFoodType() const;
 
+    Vector2<int> GetCoordinates();
+
 private:
     FOOD_TYPE_ type;
+
+    Vector2<int> coordinates;
 
     bool shrinking = true;
 

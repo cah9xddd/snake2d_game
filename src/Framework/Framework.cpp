@@ -42,13 +42,13 @@ void Framework::LoadMedia()
 
     timer = std::make_unique<Timer>();
 
-    field = std::make_unique<Field>(sdl_manager->GetWindow());
+    field = std::make_unique<Field>();
 
-    snake = std::make_unique<Snake>(sdl_manager->GetWindow());
+    snake = std::make_unique<Snake>(sdl_manager->GetRenderer());
 
-    food = std::make_unique<Food>(sdl_manager->GetWindow());
+    food = std::make_unique<Food>(sdl_manager->GetRenderer());
 
-    background = std::make_unique<Background>(sdl_manager->GetWindow());
+    background = std::make_unique<Background>(sdl_manager->GetRenderer());
 }
 
 Framework::~Framework()
@@ -65,28 +65,6 @@ void Framework::HandleEvents()
         if (event.type == SDL_QUIT)
         {
             is_running = false;
-        }
-
-        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
-        {
-            GameManager::GetInstance().RefreshSquareSize(sdl_manager->GetWindow());
-            if (field)
-            {
-                field->UpdateWindowSize(sdl_manager->GetWindow());
-            }
-            if (food)
-            {
-                food->UpdateWindowSize(sdl_manager->GetWindow());
-            }
-            if (snake)
-            {
-                snake->UpdateWindowSize(sdl_manager->GetWindow());
-            }
-            if (background)
-            {
-                background->UpdateWindowSize(sdl_manager->GetWindow());
-            }
-            SDL_RenderPresent(sdl_manager->GetRenderer());
         }
 
         const Uint8 *currentKeyStates = SDL_GetKeyboardState(nullptr);
@@ -126,7 +104,7 @@ void Framework::Update()
     {
     case (GAME_STATE_PLAYING):
     {
-        if (GameManager::GetInstance().IsFoodEaten(snake->GetCoordinates(), food->GetCoordinates()))
+        if (GameManager::GetInstance().IsFoodEaten(snake->GetHeadCoordinates(), food->GetCoordinates()))
         {
             GameManager::GetInstance().DecreaseFoodLeft();
             if (GameManager::GetInstance().GetFoodLeft() == 0)

@@ -16,7 +16,6 @@ public:
 
     bool GetSDLIsInitialized();
 
-
 private:
     bool Init(const char *game_title, int x, int y, int w, int h, bool fullscreen);
 

@@ -1,8 +1,7 @@
 #include "Snake.h"
 
-Snake::Snake(SDL_Window *window) : GameObject(window)
+Snake::Snake(SDL_Renderer* renderer)
 {
-    auto renderer = SDL_GetRenderer(window);
     head_texture = IMG_LoadTexture(renderer, "assets/sprites/square_head.png");
     body_texture = IMG_LoadTexture(renderer, "assets/sprites/square_body.png");
 }
@@ -59,14 +58,14 @@ void Snake::Update(float delta_time)
             {
                 return;
             }
-            coordinates = snake_body.front() + direction;
+            head_coordinates = snake_body.front() + direction;
             GameManager::GetInstance().SetSquare(snake_body.back(), 0);
 
-            prev_tail_coords = snake_body.back();
+            prev_tail_coordinates = snake_body.back();
             snake_body.pop_back();
 
-            snake_body.emplace_front(coordinates);
-            GameManager::GetInstance().SetSquare(coordinates, 1);
+            snake_body.emplace_front(head_coordinates);
+            GameManager::GetInstance().SetSquare(head_coordinates, 1);
             break;
         }
         case MOVE_TYPE_REVERSED:
@@ -75,14 +74,14 @@ void Snake::Update(float delta_time)
             {
                 return;
             }
-            coordinates = snake_body.back() + direction;
+            head_coordinates = snake_body.back() + direction;
             GameManager::GetInstance().SetSquare(snake_body.front(), 0);
 
-            prev_tail_coords = snake_body.front();
+            prev_tail_coordinates = snake_body.front();
             snake_body.pop_front();
 
-            snake_body.emplace_back(coordinates);
-            GameManager::GetInstance().SetSquare(coordinates, 1);
+            snake_body.emplace_back(head_coordinates);
+            GameManager::GetInstance().SetSquare(head_coordinates, 1);
             break;
         }
         }
@@ -181,14 +180,19 @@ void Snake::ReverseSnake()
     if (move_type == MOVE_TYPE_NORMAL)
     {
         move_type = MOVE_TYPE_REVERSED;
-        coordinates = snake_body.back();
+        head_coordinates = snake_body.back();
     }
     else
     {
         move_type = MOVE_TYPE_NORMAL;
-        coordinates = snake_body.front();
+        head_coordinates = snake_body.front();
     }
-    direction = new_direction = prev_tail_coords - coordinates;
+    direction = new_direction = prev_tail_coordinates - head_coordinates;
+}
+
+Vector2<int> Snake::GetHeadCoordinates()
+{
+    return head_coordinates;
 }
 
 void Snake::Render(SDL_Renderer *renderer)

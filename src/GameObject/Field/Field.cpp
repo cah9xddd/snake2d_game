@@ -2,7 +2,11 @@
 
 #include "GameManager/GameManager.h"
 
-Field::Field(SDL_Window *window) : GameObject(window) { UpdateWindowSize(window); }
+Field::Field()
+{
+    field.w = GameManager::GetInstance().SIZE_X * GameManager::GetInstance().GetSquareSize().x;
+    field.h = GameManager::GetInstance().SIZE_Y * GameManager::GetInstance().GetSquareSize().y;
+}
 
 Field::~Field()
 {
@@ -31,12 +35,4 @@ void Field::Render(SDL_Renderer *renderer)
         SDL_RenderDrawLineF(renderer, 0, 1 + square_size.y * i, field.w, 1 + square_size.y * i);
     }
     SDL_SetRenderDrawColor(renderer, 15, 15, 15, 255);
-}
-
-void Field::UpdateWindowSize(SDL_Window *window)
-{
-    SDL_GetWindowSize(window, &window_size.x, &window_size.y);
-
-    field.w = GameManager::GetInstance().SIZE_X * GameManager::GetInstance().GetSquareSize().x;
-    field.h = GameManager::GetInstance().SIZE_Y * GameManager::GetInstance().GetSquareSize().y;
 }

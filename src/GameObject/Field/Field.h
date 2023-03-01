@@ -4,13 +4,12 @@
 
 class Field : public GameObject {
 public:
-    explicit Field(SDL_Window *window);
+    Field();
     ~Field() override;
 
     void Render(SDL_Renderer* renderer) override;
     void Update(float delta_time) override {};
     void HandleInput(SDL_Event& event) override {};
-    void UpdateWindowSize(SDL_Window* window) override;
 
 private:
     SDL_Rect field;

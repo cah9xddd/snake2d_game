@@ -2,51 +2,53 @@
 #include <iostream>
 
 #include "GameObject/GameObject.h"
+struct SDL_Window;
 
-class Background : public GameObject {
+class Background : public GameObject
+{
 
 public:
-    explicit Background(SDL_Window *window);
+    Background(SDL_Renderer *renderer);
     ~Background() override;
 
-    void Render(SDL_Renderer* renderer) override;
-    void Update(float delta_time) override {};
-    void HandleInput(SDL_Event& event) override {};
+    void Render(SDL_Renderer *renderer) override;
+    void Update(float delta_time) override{};
+    void HandleInput(SDL_Event &event) override{};
 
 private:
-    SDL_Texture* background_t;
-    SDL_Texture* game_name_t;
+    SDL_Texture *background_texture;
+    SDL_Texture *game_name_texture;
 };
 
-inline Background::Background(SDL_Window* window) : GameObject(window)
+inline Background::Background(SDL_Renderer *renderer)
 {
-    auto renderer = SDL_GetRenderer(window);
-    background_t = IMG_LoadTexture(renderer, "assets/sprites/background.jpg");
-    game_name_t = IMG_LoadTexture(renderer, "assets/sprites/name.png");
+    background_texture = IMG_LoadTexture(renderer, "assets/sprites/background.jpg");
+    game_name_texture = IMG_LoadTexture(renderer, "assets/sprites/name.png");
 }
 
 inline Background::~Background()
 {
     "BACKGROUND DESTRUCTOR";
-    SDL_DestroyTexture(background_t);
-    background_t = nullptr;
-    SDL_DestroyTexture(game_name_t);
-    background_t = nullptr;
+    SDL_DestroyTexture(background_texture);
+    background_texture = nullptr;
+    SDL_DestroyTexture(game_name_texture);
+    background_texture = nullptr;
 }
 
-inline void Background::Render(SDL_Renderer* renderer)
+inline void Background::Render(SDL_Renderer *renderer)
 {
     SDL_Rect texture_rect;
-
+    int w , h;
+    SDL_GetWindowSize(SDL_RenderGetWindow(renderer), &w, &h);
     texture_rect.x = 0;
     texture_rect.y = 0;
-    texture_rect.w = window_size.x;
-    texture_rect.h = window_size.y;
-    SDL_RenderCopy(renderer, background_t, nullptr, &texture_rect);
+    texture_rect.w = w;
+    texture_rect.h = h;
+    SDL_RenderCopy(renderer, background_texture, nullptr, &texture_rect);
 
-    texture_rect.x = window_size.x * 0.25f;
-    texture_rect.y = window_size.y * 0.1f;
-    texture_rect.w = window_size.x * 0.5f;
-    texture_rect.h = window_size.y * 0.2f;
-    SDL_RenderCopy(renderer, game_name_t, nullptr, &texture_rect);
+    texture_rect.x = w * 0.25f;
+    texture_rect.y = h * 0.1f;
+    texture_rect.w = w * 0.5f;
+    texture_rect.h = h * 0.2f;
+    SDL_RenderCopy(renderer, game_name_texture, nullptr, &texture_rect);
 }

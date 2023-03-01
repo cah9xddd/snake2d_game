@@ -8,19 +8,12 @@
 
 class GameObject {
 public:
-    explicit GameObject(SDL_Window* window);
+    explicit GameObject();
     virtual ~GameObject() {};
 
-    virtual void Render(SDL_Renderer* renderer) = 0;
-    virtual void Update(float delta_time) = 0;
-    virtual void HandleInput(SDL_Event& event) = 0;
-
-    virtual void UpdateWindowSize(SDL_Window* window);
-
-    Vector2<int> GetCoordinates() const;
+    virtual void Render(SDL_Renderer* renderer) ;
+    virtual void Update(float delta_time);
+    virtual void HandleInput(SDL_Event& event);
 
 protected:
-    std::vector<GameObject> childs;
-    Vector2<int> window_size;
-    Vector2<int> coordinates;
 };

@@ -2,9 +2,8 @@
 
 #include "GameManager/GameManager.h"
 
-Food::Food(SDL_Window *window) : GameObject(window)
+Food::Food(SDL_Renderer* renderer)
 {
-    auto renderer = SDL_GetRenderer(window);
     food_texture = IMG_LoadTexture(renderer, "assets/sprites/apple.png");
     reverse_food_texture = IMG_LoadTexture(renderer, "assets/sprites/reverse.png");
 }
@@ -50,6 +49,11 @@ void Food::CreateNewFood()
 }
 
 Food::FOOD_TYPE_ Food::GetFoodType() const { return type; }
+
+Vector2<int> Food::GetCoordinates()
+{
+    return coordinates;
+}
 
 void Food::Render(SDL_Renderer *renderer)
 {

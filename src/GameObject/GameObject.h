@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+#include <chrono>
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
@@ -12,6 +12,6 @@ public:
     virtual ~GameObject() {};
 
     virtual void Render(SDL_Renderer* renderer) {};
-    virtual void Update(float delta_time) {};
+    virtual void Update(std::chrono::milliseconds delta_time) {};
     virtual void HandleInput(SDL_Event& event) {};
 };

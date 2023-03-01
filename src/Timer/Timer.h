@@ -1,16 +1,27 @@
 #pragma once
-#include "SDL2/SDL.h"
+#include <chrono>
 
+#include "SDL2/SDL.h"
 class Timer
 {
 public:
-    explicit Timer(){};
-    ~Timer();
-    float GetDeltaTime() const;
+    explicit Timer() {};
+    ~Timer() {};
+    inline std::chrono::milliseconds GetDeltaTime() const;
     void Tick();
 
 private:
-    float delta_time = 0;
-    float last_time = 0;
-
+    std::chrono::milliseconds delta_time = std::chrono::milliseconds(0);
+    std::chrono::milliseconds last_time = std::chrono::milliseconds(0);
 };
+
+inline std::chrono::milliseconds Timer::GetDeltaTime() const { return delta_time; }
+
+inline void Timer::Tick()
+{
+    auto now = std::chrono::milliseconds(SDL_GetTicks());
+
+    delta_time = (now - last_time);
+
+    last_time = now;
+}

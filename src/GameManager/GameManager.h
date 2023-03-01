@@ -14,11 +14,12 @@ enum GAME_STATE_
     GAME_STATE_NEW_GAME = 4,
     GAME_STATE_EXIT = 5,
 };
+//time in milliseconds between snake steps
 enum DIFFICULTY_
 {
-    DIFFICULTY_EASY = 20,
-    DIFFICULTY_NORMAL = 15,
-    DIFFICULTY_HARD = 10,
+    DIFFICULTY_EASY = 200,
+    DIFFICULTY_NORMAL = 150,
+    DIFFICULTY_HARD = 100,
 };
 class GameManager
 {

@@ -1,6 +1,6 @@
 #include "Snake.h"
 
-Snake::Snake(SDL_Renderer* renderer)
+Snake::Snake(SDL_Renderer *renderer)
 {
     head_texture = IMG_LoadTexture(renderer, "assets/sprites/square_head.png");
     body_texture = IMG_LoadTexture(renderer, "assets/sprites/square_body.png");
@@ -36,10 +36,11 @@ void Snake::Create(const DIFFICULTY_ difficulty = DIFFICULTY_NORMAL)
     move_type = MOVE_TYPE_NORMAL;
     direction = Vector2<int>(1, 0);
     new_direction = Vector2<int>(1, 0);
-    time_between_movements = difficulty / 100.f;
+
+    time_between_movements = std::chrono::milliseconds(difficulty);
 }
 
-void Snake::Update(float delta_time)
+void Snake::Update(std::chrono::milliseconds delta_time)
 {
     Vector2<float> square_size = GameManager::GetInstance().GetSquareSize();
 
@@ -47,7 +48,7 @@ void Snake::Update(float delta_time)
 
     if (time_between_movements < passed_time)
     {
-        passed_time = 0;
+        passed_time = std::chrono::milliseconds(0);
         direction = new_direction;
 
         switch (move_type)

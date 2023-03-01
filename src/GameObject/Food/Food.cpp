@@ -74,17 +74,17 @@ void Food::Render(SDL_Renderer *renderer)
     }
 }
 
-void Food::Update(float delta_time)
+void Food::Update(std::chrono::milliseconds delta_time)
 {
     if (shrinking)
     {
-        scale -= 0.2f * delta_time;
-        border += 0.1f * delta_time;
+        scale -= delta_time.count() / 5000.f;
+        border += delta_time.count() / 10000.f;
     }
     else
     {
-        scale += 0.2f * delta_time;
-        border -= 0.1f * delta_time;
+        scale += delta_time.count() / 5000.f;
+        border -= delta_time.count() / 10000.f;
     }
 
     if (scale < 0.8f || scale > 1.1f)

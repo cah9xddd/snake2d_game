@@ -16,7 +16,7 @@ public:
     ~Snake() override;
 
     void Render(SDL_Renderer *renderer) override;
-    void Update(float delta_time) override;
+    void Update(std::chrono::milliseconds delta_time) override;
     void HandleInput(SDL_Event &event) override;
 
     void Create(const DIFFICULTY_ difficulty);
@@ -25,11 +25,12 @@ public:
     Vector2<int> GetHeadCoordinates();
 
 private:
-    float time_between_movements = 0.15f;
-    float passed_time = 0;
+    std::chrono::milliseconds time_between_movements = std::chrono::milliseconds(150);
+    std::chrono::milliseconds passed_time = std::chrono::milliseconds(0);
+
 
     MOVE_TYPE_ move_type = MOVE_TYPE_NORMAL;
-   
+
     Vector2<int> head_coordinates;
     std::list<Vector2<int>> snake_body;
     Vector2<int> prev_tail_coordinates;

@@ -14,14 +14,6 @@
 int main(int argc, char *argv[])
 {
     std::unique_ptr<Framework> framework(new Framework("SNAKE2D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, true));
-    // if (!framework->Init("SNAKE2D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, true))
-    // {
-    //     std::cout << "Failed initialize framework\n";
-    // }
-    // else
-    // {
-    //     framework->LoadMedia();
-    // }
 
     while (framework->Running())
     {

@@ -8,12 +8,10 @@
 
 class GameObject {
 public:
-    explicit GameObject();
+    explicit GameObject() {};
     virtual ~GameObject() {};
 
-    virtual void Render(SDL_Renderer* renderer) ;
-    virtual void Update(float delta_time);
-    virtual void HandleInput(SDL_Event& event);
-
-protected:
+    virtual void Render(SDL_Renderer* renderer) {};
+    virtual void Update(float delta_time) {};
+    virtual void HandleInput(SDL_Event& event) {};
 };

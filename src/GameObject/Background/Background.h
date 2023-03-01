@@ -28,7 +28,7 @@ inline Background::Background(SDL_Renderer *renderer)
 
 inline Background::~Background()
 {
-    "BACKGROUND DESTRUCTOR";
+    std::cout << "BACKGROUND DESTRUCTOR" << std::endl;
     SDL_DestroyTexture(background_texture);
     background_texture = nullptr;
     SDL_DestroyTexture(game_name_texture);

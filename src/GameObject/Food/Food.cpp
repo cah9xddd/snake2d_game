@@ -5,17 +5,17 @@
 Food::Food(SDL_Window *window) : GameObject(window)
 {
     auto renderer = SDL_GetRenderer(window);
-    food_t = IMG_LoadTexture(renderer, "assets/sprites/apple.png");
-    reverse_food_t = IMG_LoadTexture(renderer, "assets/sprites/reverse.png");
+    food_texture = IMG_LoadTexture(renderer, "assets/sprites/apple.png");
+    reverse_food_texture = IMG_LoadTexture(renderer, "assets/sprites/reverse.png");
 }
 
 Food::~Food()
 {
-    std::cout <<"FOOD DESTRUCTOR" << std::endl;
-    SDL_DestroyTexture(food_t);
-    food_t = nullptr;
-    SDL_DestroyTexture(reverse_food_t);
-    reverse_food_t = nullptr;
+    std::cout << "FOOD DESTRUCTOR" << std::endl;
+    SDL_DestroyTexture(food_texture);
+    food_texture = nullptr;
+    SDL_DestroyTexture(reverse_food_texture);
+    reverse_food_texture = nullptr;
 }
 
 void Food::CreateNewFood()
@@ -34,8 +34,8 @@ void Food::CreateNewFood()
     coordinates.x = pos_x;
     coordinates.y = pos_y;
 
-    scale = 1.f;
-    border = 0.0f;
+    scale = 1.1f;
+    border = -0.05f;
     shrinking = true;
 
     int rand_t = rand() % 4;
@@ -62,11 +62,11 @@ void Food::Render(SDL_Renderer *renderer)
     texture_rect.h = square_size.y * scale;
     if (type == FOOD_TYPE_NORMAL)
     {
-        SDL_RenderCopy(renderer, food_t, nullptr, &texture_rect);
+        SDL_RenderCopy(renderer, food_texture, nullptr, &texture_rect);
     }
     else
     {
-        SDL_RenderCopy(renderer, reverse_food_t, nullptr, &texture_rect);
+        SDL_RenderCopy(renderer, reverse_food_texture, nullptr, &texture_rect);
     }
 }
 
@@ -83,7 +83,7 @@ void Food::Update(float delta_time)
         border -= 0.1f * delta_time;
     }
 
-    if (scale <= 0.8f || scale >= 1.1f)
+    if (scale < 0.8f || scale > 1.1f)
     {
         shrinking = !shrinking;
     }

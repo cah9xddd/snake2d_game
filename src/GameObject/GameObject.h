@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
 
@@ -18,6 +20,7 @@ public:
     Vector2<int> GetCoordinates() const;
 
 protected:
+    std::vector<GameObject> childs;
     Vector2<int> window_size;
     Vector2<int> coordinates;
 };

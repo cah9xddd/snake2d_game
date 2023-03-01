@@ -42,6 +42,7 @@ private:
     std::unique_ptr<Timer> timer;
     std::unique_ptr<Background> background;
 
+    std::vector<std::unique_ptr<GameObject>> entities;
     std::unique_ptr<Field> field;
     std::unique_ptr<Snake> snake;
     std::unique_ptr<Food> food;

@@ -1,20 +1,19 @@
 #include "Snake.h"
 
-
 Snake::Snake(SDL_Window *window) : GameObject(window)
 {
     auto renderer = SDL_GetRenderer(window);
-    head_t = IMG_LoadTexture(renderer, "assets/sprites/square_head.png");
-    body_t = IMG_LoadTexture(renderer, "assets/sprites/square_body.png");
+    head_texture = IMG_LoadTexture(renderer, "assets/sprites/square_head.png");
+    body_texture = IMG_LoadTexture(renderer, "assets/sprites/square_body.png");
 }
 
 Snake::~Snake()
 {
     std::cout << "SNAKE DESTRUCTOR" << std::endl;
-    SDL_DestroyTexture(head_t);
-    head_t = nullptr;
-    SDL_DestroyTexture(body_t);
-    body_t = nullptr;
+    SDL_DestroyTexture(head_texture);
+    head_texture = nullptr;
+    SDL_DestroyTexture(body_texture);
+    body_texture = nullptr;
 }
 
 /// @brief Create snake for new game
@@ -100,7 +99,7 @@ void Snake::HandleInput(SDL_Event &event)
         {
             if (direction.y != 1)
             {
-                new_direction = Vector2<int>(0,-1);
+                new_direction = Vector2<int>(0, -1);
             }
             break;
         }
@@ -116,7 +115,7 @@ void Snake::HandleInput(SDL_Event &event)
         {
             if (direction.x != 1)
             {
-                new_direction = Vector2<int>(-1 , 0);
+                new_direction = Vector2<int>(-1, 0);
             }
             break;
         }
@@ -209,11 +208,11 @@ void Snake::Render(SDL_Renderer *renderer)
             texture_rect.h = square_size.y;
             if (i == snake_body.begin())
             {
-                SDL_RenderCopy(renderer, head_t, nullptr, &texture_rect);
+                SDL_RenderCopy(renderer, head_texture, nullptr, &texture_rect);
             }
             else
             {
-                SDL_RenderCopy(renderer, body_t, nullptr, &texture_rect);
+                SDL_RenderCopy(renderer, body_texture, nullptr, &texture_rect);
             }
         }
     }
@@ -231,11 +230,11 @@ void Snake::Render(SDL_Renderer *renderer)
             texture_rect.h = square_size.y;
             if (i == snake_body.rbegin())
             {
-                SDL_RenderCopy(renderer, head_t, nullptr, &texture_rect);
+                SDL_RenderCopy(renderer, head_texture, nullptr, &texture_rect);
             }
             else
             {
-                SDL_RenderCopy(renderer, body_t, nullptr, &texture_rect);
+                SDL_RenderCopy(renderer, body_texture, nullptr, &texture_rect);
             }
         }
     }

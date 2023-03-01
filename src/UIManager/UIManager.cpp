@@ -37,7 +37,7 @@ UIManager::UIManager(SDL_Window *window)
 
 UIManager::~UIManager()
 {
-    std::cout << "UIMANAGER DECONSTRUCTOR" << std::endl;
+    std::cout << "UIMANAGER DESTRUCTOR" << std::endl;
     ImGui_ImplSDLRenderer_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();

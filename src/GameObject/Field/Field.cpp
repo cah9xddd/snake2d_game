@@ -12,11 +12,11 @@ Field::~Field()
 void Field::Render(SDL_Renderer *renderer)
 {
     // draw rect as background for grid
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 15, 15, 15, 255);
     SDL_RenderFillRect(renderer, &field);
     SDL_RenderDrawRect(renderer, &field);
     // starts drawing grid
-    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
+    SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
     Vector2<float> square_size = GameManager::GetInstance().GetSquareSize();
     for (int i = 0; i <= GameManager::GetInstance().SIZE_X; ++i)
     {
@@ -30,7 +30,7 @@ void Field::Render(SDL_Renderer *renderer)
         SDL_RenderDrawLineF(renderer, 0, 0 + square_size.y * i, field.w, 0 + square_size.y * i);
         SDL_RenderDrawLineF(renderer, 0, 1 + square_size.y * i, field.w, 1 + square_size.y * i);
     }
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 15, 15, 15, 255);
 }
 
 void Field::UpdateWindowSize(SDL_Window *window)

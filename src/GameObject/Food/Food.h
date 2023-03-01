@@ -2,20 +2,21 @@
 
 #include "GameObject/GameObject.h"
 
-
-class Food : public GameObject {
+class Food : public GameObject
+{
 public:
-    enum FOOD_TYPE_ {
+    enum FOOD_TYPE_
+    {
         FOOD_TYPE_NORMAL = 10,
         FOOD_TYPE_REVERSE = 20,
     };
 
-    explicit Food(SDL_Window* window);
+    explicit Food(SDL_Window *window);
     ~Food() override;
 
-    void Render(SDL_Renderer* renderer) override;
+    void Render(SDL_Renderer *renderer) override;
     void Update(float delta_time) override;
-    void HandleInput(SDL_Event& event) override {};
+    void HandleInput(SDL_Event &event) override{};
 
     void CreateNewFood();
 
@@ -29,6 +30,6 @@ private:
     float scale = 1.f;
     float border = 0.f;
 
-    SDL_Texture* food_t;
-    SDL_Texture* reverse_food_t;
+    SDL_Texture *food_texture;
+    SDL_Texture *reverse_food_texture;
 };

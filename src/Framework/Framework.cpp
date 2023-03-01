@@ -36,6 +36,21 @@ Framework::Framework(const char *game_title, int x, int y, int w, int h, bool fu
     }
 }
 
+void Framework::LoadMedia()
+{
+    GameManager::GetInstance().RefreshSquareSize(sdl_manager->GetWindow());
+
+    timer = std::make_unique<Timer>();
+
+    field = std::make_unique<Field>(sdl_manager->GetWindow());
+
+    snake = std::make_unique<Snake>(sdl_manager->GetWindow());
+
+    food = std::make_unique<Food>(sdl_manager->GetWindow());
+
+    background = std::make_unique<Background>(sdl_manager->GetWindow());
+}
+
 Framework::~Framework()
 {
     std::cout << "FRAMEWORK DESTRUCTOR" << std::endl;
@@ -216,20 +231,7 @@ void Framework::Render()
     SDL_RenderPresent(sdl_manager->GetRenderer());
 }
 
-void Framework::LoadMedia()
-{
-    GameManager::GetInstance().RefreshSquareSize(sdl_manager->GetWindow());
 
-    timer = std::make_unique<Timer>();
-
-    field = std::make_unique<Field>(sdl_manager->GetWindow());
-
-    snake = std::make_unique<Snake>(sdl_manager->GetWindow());
-
-    food = std::make_unique<Food>(sdl_manager->GetWindow());
-
-    background = std::make_unique<Background>(sdl_manager->GetWindow());
-}
 
 void Framework::TimerTick()
 {

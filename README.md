@@ -1,4 +1,4 @@
-# snake2d_game
+# Snake2D_Game
 
 Snake game in neon style, with 2 types of food:
 * **Normal food** : Increasing your snake size.

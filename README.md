@@ -17,7 +17,7 @@ Snake game in neon style, with 2 types of food:
 ⚠️ **Do not forget to replace `[path_to_vcpkg]` with the actual path to vcpkg on your machine!**
 ```bash
 cmake -Bbuild -G "Visual Studio 17 2022" -DCMAKE_TOOLCHAIN_FILE=[path_to_vcpkg]/scripts/buildsystems/vcpkg.cmake
-
+```
 3. Open the generated solution file in Visual Studio:
    - Navigate to the "build" directory in File Explorer.
    - Double-click on the `snake_game.sln` file to open it in Visual Studio.

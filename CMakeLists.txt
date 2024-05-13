@@ -1,17 +1,34 @@
 cmake_minimum_required(VERSION 3.5)
 project(snake_game VERSION 1.0)
 
-# Set output directory
+if(WIN32)
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(PLATFORM "Win64")
+    else()
+        set(PLATFORM "Win32")
+    endif()
+elseif(APPLE)
+    set(PLATFORM "Mac")
+elseif(UNIX)
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(PLATFORM "Linux64")
+    else()
+        set(PLATFORM "Linux32")
+    endif()
+endif()
+
+
+# Set output directory into standart BUILD_TYPE/PLATFORM/VERSION_FOLDER/EXECUTABLE
 if(CMAKE_GENERATOR MATCHES "Visual Studio")
     foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES}) # We need that loop for VS 
-        string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
+        string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIGUPPER)
         string(TOLOWER ${OUTPUTCONFIG} OUTPUTCONFIGLOWER)
-        set(MY_OUTPUT_DIR ${CMAKE_BINARY_DIR}/v.${CMAKE_PROJECT_VERSION}-${OUTPUTCONFIGLOWER})
-        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${MY_OUTPUT_DIR})
+        set(MY_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${OUTPUTCONFIG}/${PLATFORM}/v.${CMAKE_PROJECT_VERSION})
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIGUPPER} ${MY_OUTPUT_DIR})
     endforeach()
-else()
+else() 
     string(TOLOWER ${CMAKE_BUILD_TYPE} OUTPUTCONFIG)
-    set(MY_OUTPUT_DIR ${CMAKE_BINARY_DIR}/v.${CMAKE_PROJECT_VERSION}-${OUTPUTCONFIG})
+    set(MY_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${PLATFORM}/v.${CMAKE_PROJECT_VERSION})
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${MY_OUTPUT_DIR}) 
 endif()
 

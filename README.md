@@ -1,8 +1,8 @@
 # snake2d_game
 
 Snake game in neon style, with 2 types of food:
-* Normal food : just increasing your snake size.
-* Reverse food : reversing a snake and force movement to another direction.
+* **Normal food** : Increasing your snake size.
+* **Reverse food** : Swapping the head and tail of a snake to reverse its direction of movement.
 
 <img src="misc/gameplay.gif"/>
 
